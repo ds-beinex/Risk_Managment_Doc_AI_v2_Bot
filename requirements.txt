@@ -1,7 +1,7 @@
 langchain==0.3.13
 chromadb==0.6.3
 faiss-cpu==1.7.2
-langchain_community==0.3.19
+langchain_community==0.3.13
 mysql-connector-python
 langchain_nvidia_ai_endpoints==0.3.9
 streamlit==1.39.0
