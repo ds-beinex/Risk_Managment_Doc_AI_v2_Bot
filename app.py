@@ -68,7 +68,7 @@ st.image(logo, width=150)
 st.title("Welcome to Aurex AI Chatbot")
 policy_flag = st.toggle("DocAI")
 
-import streamlit as st
+
 
 # Check if 'conn' and 'vector_store' are already in session state
 if 'conn' not in st.session_state or 'vector_store' not in st.session_state:
@@ -78,10 +78,12 @@ if 'conn' not in st.session_state or 'vector_store' not in st.session_state:
         vector_store = create_vector_db_from_metadata(metadata)
         # Store them in session state
         st.session_state.conn = conn
+        st.session_state.metadata = metadata
         st.session_state.vector_store = vector_store
 else:
     # Retrieve from session state
     conn = st.session_state.conn
+    metadata = st.session_state.metadata
     vector_store = st.session_state.vector_store
 
 
