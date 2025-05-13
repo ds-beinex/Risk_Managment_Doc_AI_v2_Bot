@@ -85,7 +85,7 @@ def log_csv(entry):
         writer.writerow(entry)
 
 # Core processing, without UI
-def process_risk_query(llm, user_question):
+def process_risk_query1(llm, user_question):
     with st.spinner("🔍 Connecting to the Risk management database..."):
         conn, metadata = get_metadata_from_mysql(db_config, descriptions_file=descriptions_file)
         if conn is None or not metadata:
@@ -121,6 +121,74 @@ def process_risk_query(llm, user_question):
         conv = finetune_conv_answer(user_question, conv, llm)
 
     return conv, result, sql
+
+
+
+def process_risk_query(llm, user_question):
+    progress = st.progress(0)
+    status_text = st.empty()
+
+    # Step 1: Connect to the database
+    status_text.text("🔍 Connecting to the Risk management database...")
+    conn, metadata = get_metadata_from_mysql(db_config, descriptions_file=descriptions_file)
+    if conn is None or not metadata:
+        progress.progress(100)
+        status_text.text("❌ Failed to connect to the database.")
+        return None, "Sorry, I was not able to connect to Database"
+    progress.progress(10)
+
+    # Step 2: Create vector store
+    status_text.text("📦 Creating vector store from metadata...")
+    vector_store = create_vector_db_from_metadata(metadata)
+    progress.progress(20)
+
+    # Step 3: Retrieve top tables
+    status_text.text("📊 Retrieving the metadata for most relevant tables...")
+    docs = retrieve_top_tables(vector_store, user_question, k=10)
+    top_names = [d.metadata["table_name"] for d in docs]
+    example_df = pd.read_excel(examples_file)
+    top3 = create_llm_table_retriever(llm, user_question, top_names, example_df)
+    filtered = [d for d in docs if d.metadata["table_name"] in top3]
+    progress.progress(40)
+
+    # Step 4: Reframe question
+    status_text.text("📝 Reframing question based on metadata...")
+    reframed = question_reframer(filtered, user_question, llm)
+    progress.progress(50)
+
+    # Step 5: Generate SQL query
+    status_text.text("🛠️ Generating SQL query...")
+    sql = generate_sql_query_for_retrieved_tables(filtered, reframed, example_df, llm)
+    progress.progress(60)
+
+    # Step 6: Execute SQL query
+    status_text.text("🚀 Executing SQL query...")
+    result, error = execute_sql_query(conn, sql)
+    if result is None or result.empty:
+        status_text.text("🧪 Debugging SQL query...")
+        sql = debug_query(filtered, user_question, sql, llm, error)
+        result, error = execute_sql_query(conn, sql)
+        if result is None or result.empty:
+            progress.progress(100)
+            status_text.text("❌ Failed to retrieve results from the database.")
+            return "Sorry, I couldn't answer your question.", None, sql
+    progress.progress(80)
+
+    # Step 7: Analyze SQL query results
+    status_text.text("📈 Analyzing SQL query results...")
+    conv = analyze_sql_query(user_question, result.to_dict(orient='records'), llm)
+    progress.progress(90)
+
+    # Step 8: Finetune conversational answer
+    status_text.text("💬 Finetuning conversational answer...")
+    conv = finetune_conv_answer(user_question, conv, llm)
+    progress.progress(100)
+    status_text.text("✅ Process completed successfully.")
+
+    return conv, result, sql
+
+
+
 
 # -- Policy Module --
 if policy_flag:
