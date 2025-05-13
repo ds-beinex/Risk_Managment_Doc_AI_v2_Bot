@@ -69,7 +69,9 @@ st.title("Welcome to Aurex AI Chatbot")
 policy_flag = st.toggle("DocAI")
 
 
-
+with st.spinner("🔍 Connecting to the Risk management database..."):
+  conn, metadata = get_metadata_from_mysql(db_config, descriptions_file=descriptions_file)
+  vector_store = create_vector_db_from_metadata(metadata)
 
 
 # Chart file hash (not used directly here)
@@ -168,9 +170,6 @@ if policy_flag:
 # -- Risk/Audit Module --
 else:
     st.success("Connected to Risk Management Module")
-    with st.spinner("🔍 Connecting to the Risk management database..."):
-       conn, metadata = get_metadata_from_mysql(db_config, descriptions_file=descriptions_file)
-       vector_store = create_vector_db_from_metadata(metadata)
     # Init LLM and session history
     if 'session_id' not in st.session_state:
         st.session_state.session_id = str(uuid.uuid4())
