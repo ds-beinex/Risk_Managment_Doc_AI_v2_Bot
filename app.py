@@ -61,17 +61,15 @@ db_config = {
     "database": DB_NAME
 }
 
-
+with st.spinner("🔍 Connecting to the Risk management database..."):
+      conn, metadata = get_metadata_from_mysql(db_config, descriptions_file=descriptions_file)
+      vector_store = create_vector_db_from_metadata(metadata)
 
 st.set_page_config(initial_sidebar_state='collapsed')
 st.image(logo, width=150)
 st.title("Welcome to Aurex AI Chatbot")
 policy_flag = st.toggle("DocAI")
 
-
-with st.spinner("🔍 Connecting to the Risk management database..."):
-  conn, metadata = get_metadata_from_mysql(db_config, descriptions_file=descriptions_file)
-  vector_store = create_vector_db_from_metadata(metadata)
 
 
 # Chart file hash (not used directly here)
@@ -124,6 +122,12 @@ def process_risk_query(llm, user_question,conn, metadata,vector_store):
 
     return conv, result, sql
 
+
+def conn_db_vec_db():
+  with st.spinner("🔍 Connecting to the Risk management database..."):
+      conn, metadata = get_metadata_from_mysql(db_config, descriptions_file=descriptions_file)
+      vector_store = create_vector_db_from_metadata(metadata)
+      return conn, metadata, vector_store
 
 # -- Policy Module --
 if policy_flag:
