@@ -86,24 +86,20 @@ def log_csv(entry):
 
 # Core processing, without UI
 def process_risk_query(llm, user_question):
-    with st.spinner("🔍 Connecting to database and fetching metadata..."):
+    with st.spinner("🔍 Connecting to the Risk management database..."):
         conn, metadata = get_metadata_from_mysql(db_config, descriptions_file=descriptions_file)
         if conn is None or not metadata:
             return None, "Sorry, I was not able to connect to Database"
-
-    with st.spinner("📚 Creating vector database from metadata..."):
         vector_store = create_vector_db_from_metadata(metadata)
 
-    with st.spinner("📊 Retrieving top tables..."):
+    with st.spinner("📊 Retrieving the metadata for most relevant tables..."):
         docs = retrieve_top_tables(vector_store, user_question, k=10)
         top_names = [d.metadata["table_name"] for d in docs]
-
-    with st.spinner("🧠 Creating LLM table retriever..."):
         example_df = pd.read_excel(examples_file)
         top3 = create_llm_table_retriever(llm, user_question, top_names, example_df)
         filtered = [d for d in docs if d.metadata["table_name"] in top3]
 
-    with st.spinner("📝 Reframing question..."):
+    with st.spinner("📝 Reframing question based on metadata..."):
         reframed = question_reframer(filtered, user_question, llm)
 
     with st.spinner("🛠️ Generating SQL query..."):
