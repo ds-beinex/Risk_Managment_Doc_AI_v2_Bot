@@ -175,15 +175,16 @@ else:
         api_key= NVIDIA_API_KEY,
         temperature=0, num_ctx=50000
     )
-    # Display chat history
-    for msg in st.session_state.risk_msgs:
-        st.chat_message(msg['role']).write(msg['content'])
-        
-     with st.spinner("🔍 Connecting to the Risk management database..."):
+    with st.spinner("🔍 Connecting to the Risk management database..."):
         conn, metadata = get_metadata_from_mysql(db_config, descriptions_file=descriptions_file)
         if conn is None or not metadata:
             return None, "Sorry, I was not able to connect to Database"
         vector_store = create_vector_db_from_metadata(metadata)
+    # Display chat history
+    for msg in st.session_state.risk_msgs:
+        st.chat_message(msg['role']).write(msg['content'])
+        
+     
     # User input at bottom
     if prompt := st.chat_input(placeholder="Ask a question about the Risk Management module"):
         # User message
