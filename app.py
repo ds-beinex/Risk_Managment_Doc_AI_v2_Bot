@@ -188,8 +188,8 @@ else:
         st.chat_message("user").write(prompt)
         st.session_state.risk_msgs.append({"role":"user","content":prompt})
         # Process the question
-        with st.spinner("Generating the answer..."):
-            conv, result, sql = process_risk_query(llm_audit, prompt)
+        #with st.spinner("Generating the answer..."):
+        conv, result, sql = process_risk_query(llm_audit, prompt)
         if conv is None:
             st.chat_message("assistant").write( "Sorry, I couldn't answer your question.")
             st.session_state.risk_msgs.append({"role":"assistant","content":"Sorry, I couldn't answer your question."})
