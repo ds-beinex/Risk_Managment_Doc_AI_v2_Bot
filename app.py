@@ -87,6 +87,24 @@ else:
     vector_store = st.session_state.vector_store
 
 
+
+class PrintRetrievalHandler(BaseCallbackHandler):
+    def __init__(self, container):
+        self.status = container.status("**Context Retrieval**")
+
+    def on_retriever_start(self, serialized: dict, query: str, **kwargs):
+        self.status.write(f"**Question:** {query}")
+        self.status.update(label=f"**Context Retrieval:** {query}")
+
+    def on_retriever_end(self, documents, **kwargs):
+        for idx, doc in enumerate(documents):
+            source = os.path.basename(doc.metadata["source"])
+            self.status.write(f"**Document {idx} from {source}**")
+            self.status.markdown(doc.page_content)
+        self.status.update(state="complete")
+
+
+
 # Chart file hash (not used directly here)
 def checkfilechange(file_path):
     with open(file_path, "rb") as f:
@@ -138,12 +156,6 @@ def process_risk_query(llm, user_question,conn, metadata,vector_store):
     return conv, result, sql
 
 
-def conn_db_vec_db():
-  with st.spinner("🔍 Connecting to the Risk management database..."):
-      conn, metadata = get_metadata_from_mysql(db_config, descriptions_file=descriptions_file)
-      vector_store = create_vector_db_from_metadata(metadata)
-      return conn, metadata, vector_store
-
 # -- Policy Module --
 if policy_flag:
     st.success("Connected to Policy Module")
@@ -182,7 +194,8 @@ if policy_flag:
         st.chat_message("user").write(prompt)
         with st.spinner("Generating policy response..."):   
             handler = BaseCallbackHandler()
-            resp = qa_chain.run(prompt, callbacks=[handler])
+            retrieval_handler = PrintRetrievalHandler(st.container())
+            resp = qa_chain.run(prompt, callbacks=[handler, retrieval_handler])
         with st.chat_message("assistant"):
             st.write(resp)
 
