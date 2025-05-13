@@ -86,26 +86,45 @@ def log_csv(entry):
 
 # Core processing, without UI
 def process_risk_query(llm, user_question):
-    conn, metadata = get_metadata_from_mysql(db_config, descriptions_file=descriptions_file)
-    if conn is None or not metadata:
-        return None, "Sorry, I was not able to connect to Database"
-    vector_store = create_vector_db_from_metadata(metadata)
-    docs = retrieve_top_tables(vector_store, user_question, k=10)
-    top_names = [d.metadata["table_name"] for d in docs]
-    example_df = pd.read_excel(examples_file)
-    top3 = create_llm_table_retriever(llm, user_question, top_names, example_df)
-    filtered = [d for d in docs if d.metadata["table_name"] in top3]
-    reframed = question_reframer(filtered, user_question, llm)
-    sql = generate_sql_query_for_retrieved_tables(filtered, reframed, example_df, llm)
-    result, error = execute_sql_query(conn, sql)
-    if result is None or result.empty:
-        sql = debug_query(filtered, user_question, sql, llm, error)
+    with st.spinner("🔍 Connecting to database and fetching metadata..."):
+        conn, metadata = get_metadata_from_mysql(db_config, descriptions_file=descriptions_file)
+        if conn is None or not metadata:
+            return None, "Sorry, I was not able to connect to Database"
+
+    with st.spinner("📚 Creating vector database from metadata..."):
+        vector_store = create_vector_db_from_metadata(metadata)
+
+    with st.spinner("📊 Retrieving top tables..."):
+        docs = retrieve_top_tables(vector_store, user_question, k=10)
+        top_names = [d.metadata["table_name"] for d in docs]
+
+    with st.spinner("🧠 Creating LLM table retriever..."):
+        example_df = pd.read_excel(examples_file)
+        top3 = create_llm_table_retriever(llm, user_question, top_names, example_df)
+        filtered = [d for d in docs if d.metadata["table_name"] in top3]
+
+    with st.spinner("📝 Reframing question..."):
+        reframed = question_reframer(filtered, user_question, llm)
+
+    with st.spinner("🛠️ Generating SQL query..."):
+        sql = generate_sql_query_for_retrieved_tables(filtered, reframed, example_df, llm)
+
+    with st.spinner("🚀 Executing SQL query..."):
         result, error = execute_sql_query(conn, sql)
-    if result is None or result.empty:
-        return "Sorry, I couldn't answer your question.",None,sql
-    conv = analyze_sql_query(user_question, result.to_dict(orient='records'), llm)
-    conv = finetune_conv_answer(user_question, conv, llm)
-    return (conv, result, sql)
+        if result is None or result.empty:
+            with st.spinner("🧪 Debugging SQL query..."):
+                sql = debug_query(filtered, user_question, sql, llm, error)
+                result, error = execute_sql_query(conn, sql)
+            if result is None or result.empty:
+                return "Sorry, I couldn't answer your question.", None, sql
+
+    with st.spinner("📈 Analyzing SQL query results..."):
+        conv = analyze_sql_query(user_question, result.to_dict(orient='records'), llm)
+
+    with st.spinner("💬 Finetuning conversational answer..."):
+        conv = finetune_conv_answer(user_question, conv, llm)
+
+    return conv, result, sql
 
 # -- Policy Module --
 if policy_flag:
