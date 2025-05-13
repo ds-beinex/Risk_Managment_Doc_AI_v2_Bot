@@ -124,7 +124,7 @@ def log_csv(entry):
 # Core processing, without UI
 def process_risk_query(llm, user_question,conn, metadata,vector_store):
     if conn is None or not metadata:
-            return None, "Sorry, I was not able to connect to Database"
+            return "Sorry, I was not able to connect to Database", None, ""
     with st.spinner("📊 Retrieving the metadata for most relevant tables..."):
         docs = retrieve_top_tables(vector_store, user_question, k=10)
         top_names = [d.metadata["table_name"] for d in docs]
