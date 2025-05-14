@@ -156,7 +156,7 @@ with left_col:
             
         with st.spinner("🛠️ Generating SQL query..."):
             sql = generate_sql_query_for_retrieved_tables(filtered, reframed, example_df, llm)
-            intermediates.append(("Generated SQL", sql))
+            placeholders["Generated SQL"].code(sql)
             
         with st.spinner("🚀 Executing SQL query..."):
             result, error = execute_sql_query(conn, sql)
