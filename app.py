@@ -142,7 +142,7 @@ def process_risk_query(llm, user_question,conn, metadata,vector_store, placehold
     with st.spinner("📊 Retrieving the metadata for most relevant tables..."):
         docs = retrieve_top_tables(vector_store, user_question, k=10)
         top_names = [d.metadata["table_name"] for d in docs]
-        placeholders["Top 10 Tables"].write(", ".join(top_names))
+        placeholders["Top 10 Tables"].markdown("## Top 10 Tables") or placeholders["Top 10 Tables"].write(", ".join(top_names))
         example_df = pd.read_excel(examples_file)
         top3 = create_llm_table_retriever(llm, user_question, top_names, example_df)
         placeholders["Top 3 Tables via LLM"].write(top3)
