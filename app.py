@@ -63,11 +63,15 @@ db_config = {
 
 
 
-st.set_page_config(initial_sidebar_state='collapsed')
-left_col, right_col = st.columns([3, 2])  # Main chat area vs. side panel
-with right_col:
-    steps_expander = st.expander("Show intermediate steps", expanded=False)
-    # Create placeholders inside the expander
+st.set_page_config(initial_sidebar_state='collapsed')   
+st.image(logo, width=150)
+st.title("Welcome to Aurex AI Chatbot")
+policy_flag = st.toggle("DocAI")
+
+# 2. Sidebar expander for intermediate steps
+with st.sidebar:
+    st.markdown("### ⚙️ Intermediate Steps")
+    steps_expander = st.expander("Show steps", expanded=False)
     step_titles = [
         "Top 10 Tables",
         "Top 3 Tables via LLM",
@@ -77,196 +81,190 @@ with right_col:
         "Query Result Sample",
         "Initial Conversational Draft"
     ]
-    placeholders = {title: steps_expander.empty() for title in step_titles}
+    placeholders = {title: steps_expander.container() for title in step_titles}
+
+# Check if 'conn' and 'vector_store' are already in session state
+if 'conn' not in st.session_state or 'vector_store' not in st.session_state:
+    with st.spinner("🔍 Connecting to the Risk management database..."):
+        # Establish the database connection and create the vector store
+        conn, metadata = get_metadata_from_mysql(db_config, descriptions_file=descriptions_file)
+        vector_store = create_vector_db_from_metadata(metadata)
+        # Store them in session state
+        st.session_state.conn = conn
+        st.session_state.metadata = metadata
+        st.session_state.vector_store = vector_store
+else:
+    # Retrieve from session state
+    conn = st.session_state.conn
+    metadata = st.session_state.metadata
+    vector_store = st.session_state.vector_store
+
+
+
+class PrintRetrievalHandler(BaseCallbackHandler):
+    def __init__(self, container):
+        self.status = container.status("**Context Retrieval**")
+
+    def on_retriever_start(self, serialized: dict, query: str, **kwargs):
+        self.status.write(f"**Question:** {query}")
+        self.status.update(label=f"**Context Retrieval:** {query}")
+
+    def on_retriever_end(self, documents, **kwargs):
+        for idx, doc in enumerate(documents):
+            source = os.path.basename(doc.metadata["source"])
+            self.status.write(f"**Document {idx} from {source}**")
+            self.status.markdown(doc.page_content)
+        self.status.update(state="complete")
+
+
+
+# Chart file hash (not used directly here)
+def checkfilechange(file_path):
+    with open(file_path, "rb") as f:
+        newhash = hashlib.md5(f.read()).hexdigest()
+    return newhash
+
+# CSV logger
+def log_csv(entry):
+    log_file = "chat_log.csv"
+    write_header = not os.path.exists(log_file)
+    with open(log_file, "a", newline='', encoding='utf-8') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=entry.keys())
+        if write_header:
+            writer.writeheader()
+        writer.writerow(entry)
+
+# Core processing, without UI
+def process_risk_query(llm, user_question,conn, metadata,vector_store, placeholders):
     
-with left_col:    
-    st.image(logo, width=150)
-    st.title("Welcome to Aurex AI Chatbot")
-    policy_flag = st.toggle("DocAI")
-    
-    
-    # Check if 'conn' and 'vector_store' are already in session state
-    if 'conn' not in st.session_state or 'vector_store' not in st.session_state:
-        with st.spinner("🔍 Connecting to the Risk management database..."):
-            # Establish the database connection and create the vector store
-            conn, metadata = get_metadata_from_mysql(db_config, descriptions_file=descriptions_file)
-            vector_store = create_vector_db_from_metadata(metadata)
-            # Store them in session state
-            st.session_state.conn = conn
-            st.session_state.metadata = metadata
-            st.session_state.vector_store = vector_store
-    else:
-        # Retrieve from session state
-        conn = st.session_state.conn
-        metadata = st.session_state.metadata
-        vector_store = st.session_state.vector_store
-    
-    
-    
-    class PrintRetrievalHandler(BaseCallbackHandler):
-        def __init__(self, container):
-            self.status = container.status("**Context Retrieval**")
-    
-        def on_retriever_start(self, serialized: dict, query: str, **kwargs):
-            self.status.write(f"**Question:** {query}")
-            self.status.update(label=f"**Context Retrieval:** {query}")
-    
-        def on_retriever_end(self, documents, **kwargs):
-            for idx, doc in enumerate(documents):
-                source = os.path.basename(doc.metadata["source"])
-                self.status.write(f"**Document {idx} from {source}**")
-                self.status.markdown(doc.page_content)
-            self.status.update(state="complete")
-    
-    
-    
-    # Chart file hash (not used directly here)
-    def checkfilechange(file_path):
-        with open(file_path, "rb") as f:
-            newhash = hashlib.md5(f.read()).hexdigest()
-        return newhash
-    
-    # CSV logger
-    def log_csv(entry):
-        log_file = "chat_log.csv"
-        write_header = not os.path.exists(log_file)
-        with open(log_file, "a", newline='', encoding='utf-8') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=entry.keys())
-            if write_header:
-                writer.writeheader()
-            writer.writerow(entry)
-    
-    # Core processing, without UI
-    def process_risk_query(llm, user_question,conn, metadata,vector_store, placeholders):
+    if conn is None or not metadata:
+            return "Sorry, I was not able to connect to Database", None, ""
+    with st.spinner("📊 Retrieving the metadata for most relevant tables..."):
+        docs = retrieve_top_tables(vector_store, user_question, k=10)
+        top_names = [d.metadata["table_name"] for d in docs]
+        placeholders["Top 10 Tables"].write(top_names)
+        example_df = pd.read_excel(examples_file)
+        top3 = create_llm_table_retriever(llm, user_question, top_names, example_df)
+        placeholders["Top 3 Tables via LLM"].write(top3)
+        filtered = [d for d in docs if d.metadata["table_name"] in top3]
+
+    with st.spinner("📝 Reframing question based on metadata..."):
+        reframed = question_reframer(filtered, user_question, llm)
+        placeholders["Reframed Question"].write(reframed)
         
-        if conn is None or not metadata:
-                return "Sorry, I was not able to connect to Database", None, ""
-        with st.spinner("📊 Retrieving the metadata for most relevant tables..."):
-            docs = retrieve_top_tables(vector_store, user_question, k=10)
-            top_names = [d.metadata["table_name"] for d in docs]
-            placeholders["Top 10 Tables"].write(top_names)
-            example_df = pd.read_excel(examples_file)
-            top3 = create_llm_table_retriever(llm, user_question, top_names, example_df)
-            placeholders["Top 3 Tables via LLM"].write(top3)
-            filtered = [d for d in docs if d.metadata["table_name"] in top3]
-    
-        with st.spinner("📝 Reframing question based on metadata..."):
-            reframed = question_reframer(filtered, user_question, llm)
-            placeholders["Reframed Question"].write(reframed)
-            
-        with st.spinner("🛠️ Generating SQL query..."):
-            sql = generate_sql_query_for_retrieved_tables(filtered, reframed, example_df, llm)
-            placeholders["Generated SQL"].code(sql)
-            
-        with st.spinner("🚀 Executing SQL query..."):
-            result, error = execute_sql_query(conn, sql)
+    with st.spinner("🛠️ Generating SQL query..."):
+        sql = generate_sql_query_for_retrieved_tables(filtered, reframed, example_df, llm)
+        placeholders["Generated SQL"].code(sql)
+        
+    with st.spinner("🚀 Executing SQL query..."):
+        result, error = execute_sql_query(conn, sql)
+        if result is None or result.empty:
+            with st.spinner("🧪 Debugging SQL query..."):
+                sql = debug_query(filtered, user_question, sql, llm, error)
+                result, error = execute_sql_query(conn, sql)
+                placeholders["Debugged SQL"].code(sql)
             if result is None or result.empty:
-                with st.spinner("🧪 Debugging SQL query..."):
-                    sql = debug_query(filtered, user_question, sql, llm, error)
-                    result, error = execute_sql_query(conn, sql)
-                    placeholders["Debugged SQL"].code(sql)
-                if result is None or result.empty:
-                    return "Sorry, I couldn't answer your question.", None, sql
-            placeholders["Query Result Sample"].table(result.head())
-    
-        with st.spinner("📈 Analyzing SQL query results..."):
-            conv = analyze_sql_query(user_question, result.to_dict(orient='records'), llm)
-            placeholders["Initial Conversational Draft"].write(conv)
-        with st.spinner("💬 Finetuning conversational answer..."):
-            conv = finetune_conv_answer(user_question, conv, llm)
-    
-        return conv, result, sql
-    
-    
-    # -- Policy Module --
-    if policy_flag:
-        st.success("Connected to Policy Module")
-        uploaded = st.file_uploader("Upload PDF files", type=["pdf"], accept_multiple_files=True)
-        if not uploaded:
-            st.info("Please upload PDF documents to continue.")
-            st.stop()
-            
-        def configure_retriever(files):
-            temp = tempfile.TemporaryDirectory()
-            docs = []
-            for f in files:
-                path = os.path.join(temp.name, f.name)
-                with open(path, "wb") as out:
-                    out.write(f.getvalue())
-                docs.extend(PyPDFLoader(path).load())
-            splits = RecursiveCharacterTextSplitter(chunk_size=1500, chunk_overlap=200).split_documents(docs)
-            emb = OpenAIEmbeddings(model="text-embedding-3-large", api_key= OPENAI_KEY)
-            db = DocArrayInMemorySearch.from_documents(splits, emb)
-            return db.as_retriever(search_type="mmr", search_kwargs={"k":2, "fetch_k":4})
+                return "Sorry, I couldn't answer your question.", None, sql
+        placeholders["Query Result Sample"].table(result.head())
+
+    with st.spinner("📈 Analyzing SQL query results..."):
+        conv = analyze_sql_query(user_question, result.to_dict(orient='records'), llm)
+        placeholders["Initial Conversational Draft"].write(conv)
+    with st.spinner("💬 Finetuning conversational answer..."):
+        conv = finetune_conv_answer(user_question, conv, llm)
+
+    return conv, result, sql
+
+
+# -- Policy Module --
+if policy_flag:
+    st.success("Connected to Policy Module")
+    uploaded = st.file_uploader("Upload PDF files", type=["pdf"], accept_multiple_files=True)
+    if not uploaded:
+        st.info("Please upload PDF documents to continue.")
+        st.stop()
         
-        with st.spinner("Loading and processing documents..."):
-            retriever = configure_retriever(uploaded)
-            msgs = StreamlitChatMessageHistory()
-            memory = ConversationBufferMemory(memory_key="chat_history", chat_memory=msgs, return_messages=True)
-            llm_policy = ChatOpenAI(model_name="gpt-3.5-turbo", openai_api_key= OPENAI_KEY , temperature=0, streaming=True)
-            qa_chain = ConversationalRetrievalChain.from_llm(llm_policy, retriever=retriever, memory=memory, verbose=False)
-        
-        if len(msgs.messages)==0 or st.sidebar.button("Clear history"):
-            msgs.clear(); msgs.add_ai_message("How can I help you?")
-            
-        for m in msgs.messages:
-            st.chat_message("user" if m.type=="human" else "assistant").write(m.content)
-            
-        if prompt := st.chat_input(placeholder="Ask me anything!"):
-            st.chat_message("user").write(prompt)
-            with st.spinner("Generating policy response..."):   
-                handler = BaseCallbackHandler()
-                retrieval_handler = PrintRetrievalHandler(st.container())
-                resp = qa_chain.run(prompt, callbacks=[handler, retrieval_handler])
-            with st.chat_message("assistant"):
-                st.write(resp)
+    def configure_retriever(files):
+        temp = tempfile.TemporaryDirectory()
+        docs = []
+        for f in files:
+            path = os.path.join(temp.name, f.name)
+            with open(path, "wb") as out:
+                out.write(f.getvalue())
+            docs.extend(PyPDFLoader(path).load())
+        splits = RecursiveCharacterTextSplitter(chunk_size=1500, chunk_overlap=200).split_documents(docs)
+        emb = OpenAIEmbeddings(model="text-embedding-3-large", api_key= OPENAI_KEY)
+        db = DocArrayInMemorySearch.from_documents(splits, emb)
+        return db.as_retriever(search_type="mmr", search_kwargs={"k":2, "fetch_k":4})
     
-    # -- Risk/Audit Module --
-    else:
-        st.success("Connected to Risk Management Module")
-        # Init LLM and session history
-        if 'session_id' not in st.session_state:
-            st.session_state.session_id = str(uuid.uuid4())
-        if 'chat_history' not in st.session_state:
-            st.session_state.chat_history = []
-        if 'risk_msgs' not in st.session_state:
-            st.session_state.risk_msgs = []
-        llm_audit = ChatNVIDIA(
-            model="qwen/qwen2.5-coder-32b-instruct",
-            api_key= NVIDIA_API_KEY,
-            temperature=0, num_ctx=50000
-        )
-        
-        # Display chat history
-        for msg in st.session_state.risk_msgs:
-            st.chat_message(msg['role']).write(msg['content'])
-            
-         
-        # User input at bottom
-        if prompt := st.chat_input(placeholder="Ask a question about the Risk Management module"):
-            # User message
-            st.chat_message("user").write(prompt)
-            st.session_state.risk_msgs.append({"role":"user","content":prompt})
-            # Process the question
-            #with st.spinner("Generating the answer..."):
-            conv, result, sql = process_risk_query(llm_audit, prompt,conn, metadata,vector_store, placeholders)
-            if conv is None:
-                st.chat_message("assistant").write( "Sorry, I couldn't answer your question.")
-                st.session_state.risk_msgs.append({"role":"assistant","content":"Sorry, I couldn't answer your question."})
-            else:
-                # Assistant response
-                st.chat_message("assistant").write(conv)
-                #st.dataframe(result)
-                st.session_state.risk_msgs.append({"role":"assistant","content":conv})
+    with st.spinner("Loading and processing documents..."):
+        retriever = configure_retriever(uploaded)
+        msgs = StreamlitChatMessageHistory()
+        memory = ConversationBufferMemory(memory_key="chat_history", chat_memory=msgs, return_messages=True)
+        llm_policy = ChatOpenAI(model_name="gpt-3.5-turbo", openai_api_key= OPENAI_KEY , temperature=0, streaming=True)
+        qa_chain = ConversationalRetrievalChain.from_llm(llm_policy, retriever=retriever, memory=memory, verbose=False)
     
-                entry = { "session_id":   st.session_state.session_id,
-                          "question_id":  str(uuid.uuid4()),
-                          "timestamp":  datetime.now().isoformat(),
-                           "question":  prompt,
-                           "sql_query": "SQL query: "+ sql,
-                           "conversational_answer": "Ans: "+ conv,
-                        }
-                log_csv(entry)
+    if len(msgs.messages)==0 or st.sidebar.button("Clear history"):
+        msgs.clear(); msgs.add_ai_message("How can I help you?")
+        
+    for m in msgs.messages:
+        st.chat_message("user" if m.type=="human" else "assistant").write(m.content)
+        
+    if prompt := st.chat_input(placeholder="Ask me anything!"):
+        st.chat_message("user").write(prompt)
+        with st.spinner("Generating policy response..."):   
+            handler = BaseCallbackHandler()
+            retrieval_handler = PrintRetrievalHandler(st.container())
+            resp = qa_chain.run(prompt, callbacks=[handler, retrieval_handler])
+        with st.chat_message("assistant"):
+            st.write(resp)
+
+# -- Risk/Audit Module --
+else:
+    st.success("Connected to Risk Management Module")
+    # Init LLM and session history
+    if 'session_id' not in st.session_state:
+        st.session_state.session_id = str(uuid.uuid4())
+    if 'chat_history' not in st.session_state:
+        st.session_state.chat_history = []
+    if 'risk_msgs' not in st.session_state:
+        st.session_state.risk_msgs = []
+    llm_audit = ChatNVIDIA(
+        model="qwen/qwen2.5-coder-32b-instruct",
+        api_key= NVIDIA_API_KEY,
+        temperature=0, num_ctx=50000
+    )
+    
+    # Display chat history
+    for msg in st.session_state.risk_msgs:
+        st.chat_message(msg['role']).write(msg['content'])
+        
+     
+    # User input at bottom
+    if prompt := st.chat_input(placeholder="Ask a question about the Risk Management module"):
+        # User message
+        st.chat_message("user").write(prompt)
+        st.session_state.risk_msgs.append({"role":"user","content":prompt})
+        # Process the question
+        #with st.spinner("Generating the answer..."):
+        conv, result, sql = process_risk_query(llm_audit, prompt,conn, metadata,vector_store, placeholders)
+        if conv is None:
+            st.chat_message("assistant").write( "Sorry, I couldn't answer your question.")
+            st.session_state.risk_msgs.append({"role":"assistant","content":"Sorry, I couldn't answer your question."})
+        else:
+            # Assistant response
+            st.chat_message("assistant").write(conv)
+            #st.dataframe(result)
+            st.session_state.risk_msgs.append({"role":"assistant","content":conv})
+
+            entry = { "session_id":   st.session_state.session_id,
+                      "question_id":  str(uuid.uuid4()),
+                      "timestamp":  datetime.now().isoformat(),
+                       "question":  prompt,
+                       "sql_query": "SQL query: "+ sql,
+                       "conversational_answer": "Ans: "+ conv,
+                    }
+            log_csv(entry)
    
           
 st.sidebar.markdown("### 📥 Download Chat Log")
