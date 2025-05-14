@@ -68,6 +68,23 @@ st.image(logo, width=150)
 st.title("Welcome to Aurex AI Chatbot")
 policy_flag = st.toggle("DocAI")
 
+
+if 'conn' not in st.session_state or 'vector_store' not in st.session_state:
+    with st.spinner("🔍 Connecting to the Risk management database..."):
+        # Establish the database connection and create the vector store
+        conn, metadata = get_metadata_from_mysql(db_config, descriptions_file=descriptions_file)
+        vector_store = create_vector_db_from_metadata(metadata)
+        # Store them in session state
+        st.session_state.conn = conn
+        st.session_state.metadata = metadata
+        st.session_state.vector_store = vector_store
+else:
+    # Retrieve from session state
+    conn = st.session_state.conn
+    metadata = st.session_state.metadata
+    vector_store = st.session_state.vector_store
+
+
 # 2. Sidebar expander for intermediate steps
 with st.sidebar:
     st.markdown("### ⚙️ Intermediate Steps")
@@ -82,22 +99,6 @@ with st.sidebar:
         "Initial Conversational Draft"
     ]
     placeholders = {title: steps_expander.container() for title in step_titles}
-
-
-if 'conn' not in st.session_state or 'vector_store' not in st.session_state:
-        with st.spinner("🔍 Connecting to the Risk management database..."):
-            # Establish the database connection and create the vector store
-            conn, metadata = get_metadata_from_mysql(db_config, descriptions_file=descriptions_file)
-            vector_store = create_vector_db_from_metadata(metadata)
-            # Store them in session state
-            st.session_state.conn = conn
-            st.session_state.metadata = metadata
-            st.session_state.vector_store = vector_store
-else:
-    # Retrieve from session state
-    conn = st.session_state.conn
-    metadata = st.session_state.metadata
-    vector_store = st.session_state.vector_store
 
 class PrintRetrievalHandler(BaseCallbackHandler):
     def __init__(self, container):
