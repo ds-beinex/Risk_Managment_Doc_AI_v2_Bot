@@ -69,21 +69,6 @@ st.title("Welcome to Aurex AI Chatbot")
 policy_flag = st.toggle("DocAI")
 
 
-if 'conn' not in st.session_state or 'vector_store' not in st.session_state:
-    with st.spinner("🔍 Connecting to the Risk management database..."):
-        # Establish the database connection and create the vector store
-        conn, metadata = get_metadata_from_mysql(db_config, descriptions_file=descriptions_file)
-        vector_store = create_vector_db_from_metadata(metadata)
-        # Store them in session state
-        st.session_state.conn = conn
-        st.session_state.metadata = metadata
-        st.session_state.vector_store = vector_store
-else:
-    # Retrieve from session state
-    conn = st.session_state.conn
-    metadata = st.session_state.metadata
-    vector_store = st.session_state.vector_store
-
 
 # 2. Sidebar expander for intermediate steps
 with st.sidebar:
@@ -134,7 +119,22 @@ def log_csv(entry):
         writer.writerow(entry)
 
 # Core processing, without UI
-def process_risk_query(llm, user_question, conn, metadata, vector_store, placeholders):
+def process_risk_query(llm, user_question,placeholders):
+    if 'conn' not in st.session_state or 'vector_store' not in st.session_state:
+        with st.spinner("🔍 Connecting to the Risk management database..."):
+            # Establish the database connection and create the vector store
+            conn, metadata = get_metadata_from_mysql(db_config, descriptions_file=descriptions_file)
+            vector_store = create_vector_db_from_metadata(metadata)
+            # Store them in session state
+            st.session_state.conn = conn
+            st.session_state.metadata = metadata
+            st.session_state.vector_store = vector_store
+    else:
+        # Retrieve from session state
+        conn = st.session_state.conn
+        metadata = st.session_state.metadata
+        vector_store = st.session_state.vector_store
+    
     if conn is None or not metadata:
             return "Sorry, I was not able to connect to Database", None, ""
     with st.spinner("📊 Retrieving the metadata for most relevant tables..."):
@@ -247,7 +247,7 @@ else:
         st.session_state.risk_msgs.append({"role":"user","content":prompt})
         # Process the question
         #with st.spinner("Generating the answer..."):
-        conv, result, sql = process_risk_query(llm_audit, prompt,conn, metadata, vector_store, placeholders)
+        conv, result, sql = process_risk_query(llm_audit, prompt, placeholders)
         if conv is None:
             st.chat_message("assistant").write( "Sorry, I couldn't answer your question.")
             st.session_state.risk_msgs.append({"role":"assistant","content":"Sorry, I couldn't answer your question."})
