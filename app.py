@@ -64,7 +64,7 @@ db_config = {
 
 
 st.set_page_config(initial_sidebar_state='collapsed')
-left_col, right_col = st.columns([3, 2])  # Main chat area vs. side panel
+left_col, right_col = st.columns([3, 1])  # Main chat area vs. side panel
 with right_col:
     steps_expander = st.expander("Show intermediate steps", expanded=False)
     # Create placeholders inside the expander
