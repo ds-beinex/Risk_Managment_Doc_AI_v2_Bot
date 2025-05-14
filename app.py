@@ -93,11 +93,11 @@ if 'conn' not in st.session_state or 'vector_store' not in st.session_state:
             st.session_state.conn = conn
             st.session_state.metadata = metadata
             st.session_state.vector_store = vector_store
-    else:
-        # Retrieve from session state
-        conn = st.session_state.conn
-        metadata = st.session_state.metadata
-        vector_store = st.session_state.vector_store
+else:
+    # Retrieve from session state
+    conn = st.session_state.conn
+    metadata = st.session_state.metadata
+    vector_store = st.session_state.vector_store
 
 class PrintRetrievalHandler(BaseCallbackHandler):
     def __init__(self, container):
