@@ -85,6 +85,20 @@ st.image(logo, width=150)
 st.title("Welcome to Aurex AI Chatbot")
 policy_flag = st.toggle("DocAI")
 
+# 2. Sidebar expander for intermediate steps
+with st.sidebar:
+    st.markdown("### ⚙️ Intermediate Steps")
+    steps_expander = st.expander("Show steps", expanded=False)
+    step_titles = [
+        "Top 10 Tables",
+        "Top 3 Tables via LLM",
+        "Reframed Question",
+        "Generated SQL",
+        "Debugged SQL",
+        "Query Result Sample",
+        "Initial Conversational Draft"
+    ]
+    placeholders = {title: steps_expander.container() for title in step_titles}
 
 
 # Chart file hash (not used directly here)
@@ -148,27 +162,37 @@ def process_risk_query(llm, user_question):
     with st.spinner("📊 Retrieving the metadata for most relevant tables..."):
         docs = retrieve_top_tables(vector_store, user_question, k=10)
         top_names = [d.metadata["table_name"] for d in docs]
+        #placeholders["Top 10 Table"].markdown("## Top 10 Tables after stage 1 retrieval")
+        placeholders["Top 10 Tables"].write(", ".join(top_names))
         example_df = pd.read_excel(examples_file)
         top3 = create_llm_table_retriever(llm, user_question, top_names, example_df)
+        #placeholders["Top 3 Tables via LLM"].markdown("## Top 3 Tables after stage 2 retrieval")
+        placeholders["Top 3 Tables via LLM"].write(top3)
         filtered = [d for d in docs if d.metadata["table_name"] in top3]
 
     with st.spinner("📝 Reframing question based on metadata..."):
         reframed = question_reframer(filtered, user_question, llm)
+        placeholders["Reframed Question"].write(reframed)
 
     with st.spinner("🛠️ Generating SQL query..."):
         sql = generate_sql_query_for_retrieved_tables(filtered, reframed, example_df, llm)
-
+        placeholders["Generated SQL"].code(sql)
+        
     with st.spinner("🚀 Executing SQL query..."):
         result, error = execute_sql_query(conn, sql)
         if result is None or result.empty:
             with st.spinner("🧪 Debugging SQL query..."):
                 sql = debug_query(filtered, user_question, sql, llm, error)
                 result, error = execute_sql_query(conn, sql)
+                placeholders["Debugged SQL"].code(sql)
             if result is None or result.empty:
                 return "Sorry, I couldn't answer your question.", None, sql
+        placeholders["Query Result Sample"].table(result.head())
+       
 
     with st.spinner("📈 Analyzing SQL query results..."):
         conv = analyze_sql_query(user_question, result.to_dict(orient='records'), llm)
+        placeholders["Initial Conversational Draft"].write(conv)
 
     with st.spinner("💬 Finetuning conversational answer..."):
         conv = finetune_conv_answer(user_question, conv, llm)
