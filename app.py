@@ -172,10 +172,12 @@ def process_risk_query(llm, user_question):
 
     with st.spinner("📝 Reframing question based on metadata..."):
         reframed = question_reframer(filtered, user_question, llm)
+        placeholders["Reframed Question"].markdown("## Question Rephrasing Process")
         placeholders["Reframed Question"].write(reframed)
 
     with st.spinner("🛠️ Generating SQL query..."):
         sql = generate_sql_query_for_retrieved_tables(filtered, reframed, example_df, llm)
+        placeholders["Generated SQL"].markdown("## SQL Query Generation Process")
         placeholders["Generated SQL"].code(sql)
         
     with st.spinner("🚀 Executing SQL query..."):
@@ -184,14 +186,17 @@ def process_risk_query(llm, user_question):
             with st.spinner("🧪 Debugging SQL query..."):
                 sql = debug_query(filtered, user_question, sql, llm, error)
                 result, error = execute_sql_query(conn, sql)
+                placeholders["Debugged SQL"].markdown("## SQL Query Debugging Process")
                 placeholders["Debugged SQL"].code(sql)
             if result is None or result.empty:
                 return "Sorry, I couldn't answer your question.", None, sql
+        placeholders["Query Result Sample"].markdown("## Tabular Result of SQL Query")        
         placeholders["Query Result Sample"].table(result.head())
        
 
     with st.spinner("📈 Analyzing SQL query results..."):
         conv = analyze_sql_query(user_question, result.to_dict(orient='records'), llm)
+        placeholders["Initial Conversational Draft"].markdown("## Initial Answer before finetuning process")
         placeholders["Initial Conversational Draft"].write(conv)
 
     with st.spinner("💬 Finetuning conversational answer..."):
