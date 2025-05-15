@@ -314,7 +314,7 @@ else:
             st.markdown(  """<style>
                 /* Target all expanders – you can tweak the selector if you need only one */
                 section[data-testid="stExpander"] {
-                    max-width: 300px;      /* set your preferred width */
+                    max-width: 75px;      /* set your preferred width */
                     margin-left: auto;     /* push it to the right */
                     margin-right: 20px;    /* small gutter from the edge */
                     padding: 0;            /* optional, tighten things up */
