@@ -208,7 +208,8 @@ def process_risk_query(llm, user_question):
             if result is None or result.empty:
                 return "Sorry, I couldn't answer your question.", None, sql
         placeholders["Query Result Sample"].markdown("## Tabular Result of SQL Query")        
-        placeholders["Query Result Sample"].table(result)
+        #placeholders["Query Result Sample"].table(result)
+        placeholders["Query Result Sample"].dataframe(result, width=200, height=100)
        
 
     with st.spinner("📈 Analyzing SQL query results..."):
