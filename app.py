@@ -311,8 +311,7 @@ else:
                 for k in ("last_prompt", "last_sql", "last_conv"):
                     st.session_state.pop(k, None)
 
-            st.markdown(  """
-                <style>
+            st.markdown(  """<style>
                 /* Target all expanders – you can tweak the selector if you need only one */
                 section[data-testid="stExpander"] {
                     max-width: 300px;      /* set your preferred width */
@@ -324,9 +323,7 @@ else:
                 section[data-testid="stExpander"] > .st-expanderHeader {
                     font-size: 0.9rem;
                 }
-                </style>
-                """,
-                unsafe_allow_html=True, )
+                </style> """,unsafe_allow_html=True, )
 
             feedback_expander = st.expander("Give Feedback", expanded=False)
             with feedback_expander:
