@@ -311,30 +311,19 @@ else:
                 for k in ("last_prompt", "last_sql", "last_conv"):
                     st.session_state.pop(k, None)
 
-            st.markdown(  """<style>
-                /* Target all expanders – you can tweak the selector if you need only one */
-                section[data-testid="stExpander"] {
-                    max-width: 75px;      /* set your preferred width */
-                    margin-left: auto;     /* push it to the right */
-                    margin-right: 20px;    /* small gutter from the edge */
-                    padding: 0;            /* optional, tighten things up */
-                }
-                /* Optionally reduce the header font size */
-                section[data-testid="stExpander"] > .st-expanderHeader {
-                    font-size: 0.9rem;
-                }
-                </style> """,unsafe_allow_html=True, )
-
+            col1, col2, col3 = st.columns([1, 2, 1])
+            
             feedback_expander = st.expander("Give Feedback", expanded=False)
-            with feedback_expander:
-                with st.form("feedback_form"):
-                    st.subheader("Rate this answer and leave optional comments")
-                
-                    # Star rating from 1–5
-                    rating = st.feedback(options="stars",key="feedback_rating")
-                    # Text feedaback
-                    comment = st.text_input("Please provide comments for improvement (optional)",key="feedback_comment")
-                    submit = st.form_submit_button("Submit Feedback", on_click=submit_feedback)
+            with col2:
+                with feedback_expander:
+                    with st.form("feedback_form"):
+                        st.subheader("Rate this answer and leave optional comments")
+                    
+                        # Star rating from 1–5
+                        rating = st.feedback(options="stars",key="feedback_rating")
+                        # Text feedaback
+                        comment = st.text_input("Please provide comments for improvement (optional)",key="feedback_comment")
+                        submit = st.form_submit_button("Submit Feedback", on_click=submit_feedback)
 
             if submit == False:
                 entry = { "session_id":   str(st.session_state["session_id"]),
