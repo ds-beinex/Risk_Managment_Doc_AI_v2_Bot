@@ -311,19 +311,17 @@ else:
                 for k in ("last_prompt", "last_sql", "last_conv"):
                     st.session_state.pop(k, None)
 
-            col1, col2, col3 = st.columns([1, 2, 1])
             
             feedback_expander = st.expander("Give Feedback", expanded=False)
-            with col2:
-                with feedback_expander:
-                    with st.form("feedback_form"):
-                        st.subheader("Rate this answer and leave optional comments")
-                    
-                        # Star rating from 1–5
-                        rating = st.feedback(options="stars",key="feedback_rating")
-                        # Text feedaback
-                        comment = st.text_input("Please provide comments for improvement (optional)",key="feedback_comment")
-                        submit = st.form_submit_button("Submit Feedback", on_click=submit_feedback)
+            with feedback_expander:
+                with st.form("feedback_form"):
+                    st.subheader("Rate this answer and leave optional comments")
+                
+                    # Star rating from 1–5
+                    rating = st.feedback(options="stars",key="feedback_rating")
+                    # Text feedaback
+                    comment = st.text_input("Please provide comments for improvement (optional)",key="feedback_comment")
+                    submit = st.form_submit_button("Submit Feedback", on_click=submit_feedback)
 
             if submit == False:
                 entry = { "session_id":   str(st.session_state["session_id"]),
