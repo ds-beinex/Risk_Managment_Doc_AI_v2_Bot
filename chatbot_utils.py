@@ -340,7 +340,7 @@ def generate_sql_query_for_retrieved_tables(selected_docs, user_question, exampl
     
     
     sql_prompt_template = PromptTemplate(template="""
-        You are a data assistant with access to a MySQL database containing a subset of tables.  
+                You are a data assistant with access to a MySQL database containing a subset of tables.  
         ## Below is the metadata for the selected tables:  
         
         {selected_metadata}  
@@ -370,11 +370,11 @@ def generate_sql_query_for_retrieved_tables(selected_docs, user_question, exampl
            - Use appropriate **INNER JOIN, LEFT JOIN, or RIGHT JOIN** when multiple tables are involved.  
            - Always specify the **correct primary and foreign key relationships** from the metadata. 
         8. **Very Important**- In query use the tablename where all informations/columns relevant ot user question is available, in case it is not available, please join with other tablename where this information is available.
-        9. **Fuzzy matching **-Please use LIKE % incase of fuzzy matching with string for filtering purpose when there is a doubt about actual value/condition.
+        9. **Fuzzy matching **-Please use LIKE % incase of fuzzy matching with string for filtering purpose when there is a doubt about actual value/condition. Please prefer LIKE instead of '=' wherever applicable in SQL query.
         10. **Column name**- Show (SELECT) all the required column names/counts/aggregates(sum,max,min,avg etc.) from required table/tables to answer the question correctly.
-        
+        11. Please Replace risk_type column with risk_category1 in SQL query if it is there.
         ## User's Question: {question}  
-        ## SQL Query:  
+        ## SQL Query: 
         """,input_variables=["selected_metadata","Question_SQL_Queries_Examples", "question"])
 
     llm_chain_sql = LLMChain(prompt=sql_prompt_template, llm=llm)
