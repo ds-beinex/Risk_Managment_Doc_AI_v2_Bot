@@ -297,8 +297,9 @@ else:
             st.session_state.risk_msgs.append({"role":"assistant","content":"Sorry, I couldn't answer your question."})
         else:
             # Assistant response
-            st.chat_message("assistant").write(conv)
+            #st.chat_message("assistant").write(conv)
             #st.dataframe(result)
+            st.markdown(f"{conv} <span style='color:blue; cursor:pointer;'>&gt;</span>", unsafe_allow_html=True)
             with st.expander("Show DataFrame", expanded=False):
                st.dataframe(result)
             st.session_state.risk_msgs.append({"role":"assistant","content":conv})
