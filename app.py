@@ -299,32 +299,11 @@ else:
         else:
             # Assistant response
             st.chat_message("assistant").write(conv)
-            #st.dataframe(result)
-            # 2) Build the DataTables HTML
-            html = f"""
-            <details style="margin-left: 20px;">
-              <summary style="
-                color: #0275d8;          /* bootstrap “link” blue */
-                font-size: 0.9em;
-                cursor: pointer;
-                user-select: none;
-              ">
-                Show result
-              </summary>
-              <div style="width: 800px;        /* match st.dataframe width */
-                height: 300px;       /* match st.dataframe height */
-                overflow: auto;      /* both scrollbars */
-                margin-top: 5px;
-                border: 1px solid #ddd;
-                padding: 5px;
-                background-color: #fafafa;">
-                {result.to_html(index=False, classes='dataframe', border=0)}
-              </div>
-            </details>
-            """
-
-            # 3) Render that HTML snippet
-            st.markdown(html, unsafe_allow_html=True)
+            tab_toggle_on = st.toggle("See Tabular Answer")
+            if tab_toggle_on:
+              st.write("See Conversational Answer")
+              st.dataframe(result,width=600, height=300)
+            
             st.session_state.risk_msgs.append({"role":"assistant","content":conv})
         
             # ---- Simplified Feedback ----           
