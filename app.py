@@ -298,7 +298,7 @@ else:
         else:
             # Assistant response
             st.chat_message("assistant").write(conv)
-            #st.dataframe(result)
+            st.dataframe(result)
             st.session_state.risk_msgs.append({"role":"assistant","content":conv})
         
             # ---- Simplified Feedback ----           
