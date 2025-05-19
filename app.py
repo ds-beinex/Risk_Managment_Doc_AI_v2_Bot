@@ -311,7 +311,13 @@ else:
               ">
                 Show result
               </summary>
-              <div style="max-height:300px; overflow:auto; margin-top:5px;">
+              <div style="width: 800px;        /* match st.dataframe width */
+                height: 300px;       /* match st.dataframe height */
+                overflow: auto;      /* both scrollbars */
+                margin-top: 5px;
+                border: 1px solid #ddd;
+                padding: 5px;
+                background-color: #fafafa;">
                 {result.to_html(index=False, classes='dataframe', border=0)}
               </div>
             </details>
