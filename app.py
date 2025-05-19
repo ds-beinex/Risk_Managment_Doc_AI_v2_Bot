@@ -125,9 +125,6 @@ def checkfilechange(file_path):
         newhash = hashlib.md5(f.read()).hexdigest()
     return newhash
 
-def show_table(result):
-    st.write("See Conversational Answer")
-    st.dataframe(result,width=600, height=300)
 
 # CSV logger
 def log_csv(entry):
@@ -302,8 +299,10 @@ else:
             st.session_state.risk_msgs.append({"role":"assistant","content":"Sorry, I couldn't answer your question."})
         else:
             # Assistant response
-            st.chat_message("assistant").write(conv)
-            tab_toggle_on = st.toggle("See Tabular Answer",on_change=show_table(result))
+            #st.chat_message("assistant").write(conv)
+            tab1, tab2 = st.tabs(["Conversational", "Tabular"])
+            tab1.chat_message("assistant").write(conv)
+            tab2.dataframe(result,width=600, height=300)
             st.session_state.risk_msgs.append({"role":"assistant","content":conv})
         
             # ---- Simplified Feedback ----           
