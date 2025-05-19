@@ -297,11 +297,27 @@ else:
             st.session_state.risk_msgs.append({"role":"assistant","content":"Sorry, I couldn't answer your question."})
         else:
             # Assistant response
-            #st.chat_message("assistant").write(conv)
+            st.chat_message("assistant").write(conv)
             #st.dataframe(result)
-            st.markdown(f"{conv} <span style='color:blue; cursor:pointer;'>&gt;</span>", unsafe_allow_html=True)
-            with st.expander("Show DataFrame", expanded=False):
-               st.dataframe(result)
+            # 2) Build an HTML <details> block with a blue chevron
+            html = f"""
+            <details style="margin-left: 20px;">
+              <summary style="
+                color: #0275d8;          /* bootstrap “link” blue */
+                font-size: 0.9em;
+                cursor: pointer;
+                user-select: none;
+              ">
+                ▶ Show result
+              </summary>
+              <div style="max-height:300px; overflow:auto; margin-top:5px;">
+                {result.to_html(index=False, classes='dataframe', border=0)}
+              </div>
+            </details>
+            """
+
+            # 3) Render that HTML snippet
+            st.markdown(html, unsafe_allow_html=True)
             st.session_state.risk_msgs.append({"role":"assistant","content":conv})
         
             # ---- Simplified Feedback ----           
