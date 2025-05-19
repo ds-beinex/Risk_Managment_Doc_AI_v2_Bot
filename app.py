@@ -1,5 +1,6 @@
 
 import streamlit as st
+from streamlit.components.v1 import html
 import pandas as pd
 import os
 import tempfile
@@ -299,25 +300,66 @@ else:
             # Assistant response
             st.chat_message("assistant").write(conv)
             #st.dataframe(result)
-            # 2) Build an HTML <details> block with a blue chevron
-            html = f"""
-            <details style="margin-left: 20px;">
+            # 2) Build the DataTables HTML
+            table_html = result.to_html(classes="display nowrap", index=False)
+            
+            data_tables = f"""
+            <link 
+              rel="stylesheet" 
+              href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"/>
+            <link 
+              rel="stylesheet" 
+              href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css"/>
+            <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+            <script 
+              src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+            <script 
+              src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+            <script 
+              src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+            <script 
+              src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+            <script 
+              src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+            <script 
+              src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+            <script 
+              src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+            
+            <details style="margin-left: 20px; margin-top:10px;">
               <summary style="
-                color: #0275d8;          /* bootstrap “link” blue */
-                font-size: 0.9em;
+                color: #0275d8; 
+                font-size: 0.9em; 
                 cursor: pointer;
-                user-select: none;
-              ">
-                ▶ Show result
+                user-select: none;">
+                Show result table
               </summary>
-              <div style="max-height:300px; overflow:auto; margin-top:5px;">
-                {result.to_html(index=False, classes='dataframe', border=0)}
+              <div style="padding:10px;">
+                {table_html}
               </div>
             </details>
+            
+            <script>
+            $(document).ready(function() {{
+              $('table.display').DataTable({{
+                scrollY: '300px',
+                scrollX: true,
+                paging: true,
+                dom: 'Bfrtip',
+                buttons: [
+                  'copyHtml5',
+                  'csvHtml5',
+                  'excelHtml5',
+                  'pdfHtml5',
+                  'print'
+                ]
+              }});
+            }});
+            </script>
             """
-
-            # 3) Render that HTML snippet
-            st.markdown(html, unsafe_allow_html=True)
+            
+            # 3) Embed it
+            html(data_tables, height=450, scrolling=True)
             st.session_state.risk_msgs.append({"role":"assistant","content":conv})
         
             # ---- Simplified Feedback ----           
