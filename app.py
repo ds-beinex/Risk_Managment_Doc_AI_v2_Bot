@@ -252,7 +252,7 @@ if policy_flag:
         msgs = StreamlitChatMessageHistory()
         memory = ConversationBufferMemory(memory_key="chat_history", chat_memory=msgs, return_messages=True)
         #llm_policy = ChatOpenAI(model_name="gpt-3.5-turbo", openai_api_key= OPENAI_KEY , temperature=0, streaming=True)
-        llm_policy= ollama_llm = ChatOllama(model="llama3",temperature=0,base_url="https://2404-34-147-56-192.ngrok-free.app/api/generate")
+        llm_policy= ollama_llm = ChatOllama(model="llama3",temperature=0,base_url="https://2404-34-147-56-192.ngrok-free.app")
         qa_chain = ConversationalRetrievalChain.from_llm(llm_policy, retriever=retriever, memory=memory, verbose=False)
     
     if len(msgs.messages)==0 or st.sidebar.button("Clear history"):
