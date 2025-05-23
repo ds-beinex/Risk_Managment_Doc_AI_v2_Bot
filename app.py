@@ -281,7 +281,7 @@ else:
     if 'risk_msgs' not in st.session_state:
         st.session_state.risk_msgs = []
     llm_audit = ChatNVIDIA(
-        model="qwen/qwen2.5-coder-32b-instruct",
+        model="meta/llama-3.1-405b-instruct",
         api_key= NVIDIA_API_KEY,
         temperature=0, num_ctx=50000
     )
