@@ -3,9 +3,9 @@ Description: Stores details of actions, including their status, priority, owners
 Columns:
     object_id:  (Object ID) A unique identifier for each action item, likely a system-generated hash value.
     action_id:  (Action ID) A unique reference code assigned to each action for tracking and identification.
-    title:  (Title) A brief description of the action item, explaining the issue or task to be addressed.
+    title:  (Title) A brief description of the action name or issue name, explaining the issue or task to be addressed.
     status:  (Status) The current state of the action item (e.g., Open, Closed, In Progress, Review).
-    priority:  (Priority) The urgency level assigned to the action (e.g., High, Medium, Low).
+    priority:  (Priority) The urgency level assigned to the action/issue (e.g., High, Medium, Low) also indicate type of action/issue.
     due_date:  (Due Date) The deadline by which the action item is expected to be completed.
     mega_process:  (Mega Process) The broad business function or category under which the action falls (e.g., Procurement, Talent Acquisition).
     owner:  (Owner) The individual or department responsible for executing the action.
