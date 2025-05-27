@@ -233,7 +233,7 @@ Relation:
 
 
 Table: IMPACTS_MAIN
-Description: Captures details of identified impacts, including their description, priority, status, and tracking information for creation and updates.
+Description: Captures details of identified impacts related to causes, including their description, priority, status, and tracking information for creation and updates.
 Columns:
     impact_id:  (Impact ID) A unique identifier assigned to each impact record.
     title:  (Title) The name or heading associated with the impact.
