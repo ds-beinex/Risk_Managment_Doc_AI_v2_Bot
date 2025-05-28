@@ -438,7 +438,7 @@ Relation:
 
 
 Table: RISK_REGISTER
-Description: A register that contains identified risks associated with a specific plan or process. It includes key attributes such as risk category, status, ownership, and assessment details, enabling consistent tracking, evaluation, and management of risks across the organization.
+Description: A table the contains register(s) where each register contains risks associated with a specific plan or process. It includes key attributes such as risk category, status, ownership, and assessment details, enabling consistent tracking, evaluation, and management of risks across the organization.
 Columns:
     register_id:  (Register ID) Unique identifier for the risk register entry.
     plan_name:  (Plan Name) Name of the risk register, describing the category or focus of risks recorded (e.g., IT risks, operational risks).
@@ -680,7 +680,7 @@ Relation:
 
 
 Table: RR_LOOKUP
-Description: Maps risks to their respective risk registers, ensuring proper documentation and tracking within risk management frameworks
+Description: lookup table that maps risks to their respective risk registers, ensuring proper documentation and tracking within risk management frameworks
 Columns:
     risk_id:  (Risk ID) Unique risk identifier assigned to each risk entry.
     register_id:  (Register ID) Unique identifier for the risk register entry.
