@@ -71,11 +71,11 @@ Relation:
 
 
 Table: CAUSES_MAIN
-Description: Maintains details of identified causes, including their description, priority, status, and tracking information for creation and updates
+Description: Maintains details of identified causes for a corresponding risks, including their description, priority, status, and tracking information for creation and updates
 Columns:
     cause_id:  (Cause ID) A unique identifier assigned to each cause.
     title:  (Title) A short descriptive title summarizing the cause.
-    status:  (Status) The current status of the cause (e.g., Open, In Progress, Review).
+    status:  (Cause Status) The current status of the cause (e.g., Open, In Progress, Review).
     priority:  (Priority) The priority level assigned to the cause (e.g., High, Medium, Low).
     description:  (Description) A detailed explanation of the cause and its implications.
     created_by:  (Created by) The name of the person who initially created the cause.
@@ -238,7 +238,7 @@ Columns:
     impact_id:  (Impact ID) A unique identifier assigned to each impact record.
     title:  (Title) The name or heading associated with the impact.
     description:  (Description) A detailed explanation or summary of the impact.
-    status:  (Status) The current state of the impact (e.g., Active, Inactive, Closed).
+    status:  (Impact Status) The current state of the impact (e.g., Active, Inactive, Closed).
     priority:  (Priority) The level of urgency or importance assigned to the impact (e.g., High, Medium, Low).
     created_by:  (Created By) The name or ID of the person who created the impact record.
     updated_by:  (Updated By) The name or ID of the person who last modified the impact record.
@@ -480,7 +480,7 @@ Columns:
     residual_risk_rating_scoring_section:  (Residual Risk Rating Scoring Section) Numerical or categorical scoring used to assess the residual risk level after mitigation.
     testing_description:  (Testing Description) Description of risk assessment, testing methodologies, and validation efforts.
     treatment:  (Treatment) Actions or strategies applied to mitigate or manage the risk.
-    stage:  (Stage) Current stage of the risk lifecycle (e.g., Identified, Assessed, Mitigation in Progress, Closed).
+    stage:  (Risk Stage) Indicates the current stage of the risk lifecycle (e.g., Identified, Assessed, Mitigation in Progress, Closed).
     decision_maker_v1:  (Decision Maker V1) Person or authority responsible for key decisions related to risk management.
     scoring_model:  (Scoring Model) Methodology or framework used for risk assessment and scoring (e.g., qualitative, quantitative, hybrid).
     approval_status:  (Approval Status) Status of risk approval (e.g., Pending, Approved, Rejected).
