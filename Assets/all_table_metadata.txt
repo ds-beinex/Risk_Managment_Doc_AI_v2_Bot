@@ -314,7 +314,7 @@ Relation:
     ACTION_TYPE_LOOKUP: source_object_id
 
 Table: KRI_SCORE_LOOKUP
-Description: Associates Key Risk Indicators (KRIs) with their respective scores for tracking risk performance over time
+Description: The table stores Key Risk Indicator (KRI) Ids and their associated scores ids. The score ids are related to the SCORE table where actual KRIs scores are stored for tracking risk performance over time
 Columns:
     score_id:  (Score ID) Unique identifier for each risk score entry.
     kri_id:  (KRI ID) Unique reference code assigned to the Key Risk Indicator.
@@ -324,7 +324,7 @@ Relation:
 
 
 Table: MITIGATION_PLANS_MAIN
-Description: Documents risk mitigation plans, including their description, ownership, status, and tracking details for implementation and updates.
+Description: Stores details of mitigation plans developed to address identified risks or control weaknesses. This table includes information such as mitigation strategy, responsible owner, timelines, status, and related risk references, enabling effective tracking and management of risk response activities.
 Columns:
     mitigation_id:  (Mitigation ID) A unique identifier assigned to each mitigation action.
     title:  (Title) The name of the mitigation action or policy being implemented.
@@ -340,7 +340,7 @@ Relation:
 
 
 Table: MPR_LOOKUP
-Description: Links risks to their corresponding mitigation plans, ensuring effective risk treatment and tracking
+Description: A lookup table that links risks to their corresponding mitigation plans, ensuring effective risk treatment and tracking
 Columns:
     risk_id:  (Risk ID) Unique risk identifier assigned to each risk entry.
     mitigation_id:  (Mitigation ID) Unique identifier assigned to each mitigation action.
@@ -351,7 +351,7 @@ Relation:
 
 
 Table: RC_LOOKUP
-Description: Establishes a relationship between risks and their root causes for effective risk analysis and management
+Description: A lookup table that establishes a relationship between risks and their root causes for effective risk analysis and management
 Columns:
     risk_id:  (Risk ID) Unique risk identifier assigned to each risk entry.
     cause_id:  (Cause ID) Unique identifier assigned to each cause.
@@ -362,7 +362,7 @@ Relation:
 
 
 Table: RISK_PLAN
-Description: Stores risk management plans, including their name, status, period, and creator details for structured risk mitigation
+Description: Table contains risk management plans outlining a structured approach for reviewing or assessing risks within a defined timeframe, serving as a foundation for aligning risks, controls, and mitigation strategies under a unified plan.including their unique identifiers, names, active periods, status, and plan creators. Stores risk management plans, including their name, status, period, and creator details for structured risk mitigation
 Columns:
     plan_id:  (Plan ID) Unique identifier for a specific risk management plan.
     plan_name:  (Plan Name) Name of the risk plan, indicating its purpose or focus.
@@ -373,7 +373,7 @@ Relation:
     RP_RP_LOOKUP: plan id
 
 Table: RISK_PROGRAM
-Description: Manages risk programs by tracking their objectives, scope, status, key dates, priorities, observations, and related management responses and recommendations.
+Description: The table represents a collection of risk programs with key details including the program ID, plan name, current status, requesting party, timeline dates, objectives, and scope of the risk assessment. This table serves as the master record for managing and monitoring the lifecycle of various risk programs from initiation through completion.
 Columns:
     risk_program_id:  (Program ID) Unique identifier for a specific risk program.
     plan_name:  (Plan) Name of the risk plan under which the program falls.
@@ -407,7 +407,7 @@ Relation:
     RP_WP_LOOKUP: risk_program_id
 
 Table: RISK_PROGRAM_OBSERVATIONS
-Description: Tracks risk program observations, including their status, ratings, overdue actions, recommendations, and management responses for effective risk assessment and mitigation.
+Description: The table stores detailed audit findings and observations that are identified during the execution of specific risk programs. Each record captures individual observations linked to a parent risk program, documenting issues, deficiencies, or areas of concern discovered during the risk assessment process. This table serves as a repository for all documented observations that support the overall risk evaluation and provide evidence for audit conclusions and recommendations. Tracks risk program observations, including their status, ratings, overdue actions, recommendations, and management responses for effective risk assessment and mitigation.
 Columns:
     observation_id:  (Observation ID) Unique identifier for the recorded risk observation.
     observation:  (Observation) Brief description or label for the identified risk observation.
@@ -442,7 +442,8 @@ Relation:
 
 
 Table: RISK_REGISTER
-Description: A table the contains register(s) where each register contains risks associated with a specific plan or process. It includes key attributes such as risk category, status, ownership, and assessment details, enabling consistent tracking, evaluation, and management of risks across the organization.
+Description: The table serves as the central repository for cataloging and tracking all identified organizational risks. It contains essential fields for risk identification, descriptive names, current status tracking, risk quantification, and ownership assignments. This table functions as the master risk inventory that enables systematic organization and management of an entity's complete risk portfolio across various categories including strategic, operational, financial, compliance, technology, and reputational risks.
+A table the contains register(s) where each register contains risks associated with a specific plan or process. It includes key attributes such as risk category, status, ownership, and assessment details, enabling consistent tracking, evaluation, and management of risks across the organization.
 Columns:
     register_id:  (Register ID) Unique identifier for the risk register entry.
     plan_name:  (Plan Name) Name of the risk register, describing the category or focus of risks recorded (e.g., IT risks, operational risks).
@@ -467,7 +468,8 @@ Relation:
 
 
 Table: RISK_UNIVERSE_MAIN
-Description: Serves as a comprehensive repository of risks, tracking their details, ratings, controls, causes, impacts, mitigation strategies, ownership, and alignment with business processes and strategies.
+Description: The table serves as the comprehensive master reference that defines the complete scope of all potential risks that could affect an organization across all business areas and functions. This table establishes the foundational risk taxonomy and categorization framework that guides risk identification processes throughout the organization. It functions as the authoritative source for ensuring comprehensive risk coverage and standardized risk classification across all risk management activities and assessments.
+Serves as a comprehensive repository of risks, tracking their details, ratings, controls, causes, impacts, mitigation strategies, ownership, and alignment with business processes and strategies.
 Columns:
     object_id:  (Object ID) Unique system-generated identifier for the risk record.
     risk_id:  (Risk ID) Unique risk identifier assigned to each risk entry.
@@ -623,7 +625,7 @@ Relation:
 
 
 Table: RKRI_LOOKUP
-Description: Links risks to their associated Key Risk Indicators (KRIs) for continuous risk monitoring and assessment
+Description: A lookup table that links risks ids to their associated Key Risk Indicators (KRIs) for continuous risk monitoring and assessment
 Columns:
     risk_id:  (Risk ID) Unique risk identifier assigned to each risk entry.
     kri_id:  (KRI ID) Unique reference code assigned to the Key Risk Indicator.
@@ -634,7 +636,7 @@ Relation:
 
 
 Table: RP_AO_LOOKUP
-Description: Associates risk programs with audits, linking audit findings to specific risk management initiatives
+Description: A lookup table that links risk programs ids with audits ids, linking audit findings to specific risk management initiatives
 Columns:
     risk_program_id:  (Program ID) Unique identifier for a specific risk program.
     audit_id:  (Audit ID) Unique identifier for each audit.
@@ -644,7 +646,7 @@ Relation:
 
 
 Table: RP_RPO_LOOKUP
-Description: Links risk programs to their associated observations, facilitating tracking and management of identified risks
+Description: A lookup table that links risk programs to their associated observations, facilitating tracking and management of identified risks
 Columns:
     risk_program_id:  (Program ID) Unique identifier for a specific risk program.
     observation_id:  (Observation ID) Unique identifier for each audit/risk observations.
@@ -654,7 +656,7 @@ Relation:
 
 
 Table: RP_RP_LOOKUP
-Description: Establishes a connection between risk programs and risk plans, ensuring alignment between risk management strategies and program execution
+Description: A lookup table that links a risk programs and risk plans, ensuring alignment between risk management strategies and program execution
 Columns:
     risk_program_id:  (Program ID) Unique identifier for a specific risk program.
     plan_id:  (Plan ID) Unique identifier for a specific risk management plan.
@@ -664,7 +666,7 @@ Relation:
 
 
 Table: RP_RS_LOOKUP
-Description: Associates risk programs with their scheduled activities, ensuring proper tracking and execution of risk management tasks
+Description: A lookup table that links risk programs with their scheduled activities, ensuring proper tracking and execution of risk management tasks
 Columns:
     risk_program_id:  (Program ID) Unique identifier for a specific risk program.
     activity_id:  (Sub Activity ID) Unique identifier for a scheduled risk management activity.
@@ -674,7 +676,7 @@ Relation:
 
 
 Table: RP_WP_LOOKUP
-Description: Links risk programs to their associated working papers, maintaining documentation for risk assessment and compliance
+Description: A lookup table that links risk programs to their associated working papers, maintaining documentation for risk assessment and compliance
 Columns:
     risk_program_id:  (Program ID) Unique identifier for a specific risk program.
     working_paper_id:  (Working Paper) Unique identifier for each working paper entry.
@@ -684,7 +686,7 @@ Relation:
 
 
 Table: RR_LOOKUP
-Description: lookup table that maps risks to their respective risk registers, ensuring proper documentation and tracking within risk management frameworks
+Description: A lookup table that links risks to their respective risk registers, ensuring proper documentation and tracking within risk management frameworks
 Columns:
     risk_id:  (Risk ID) Unique risk identifier assigned to each risk entry.
     register_id:  (Register ID) Unique identifier for the risk register entry.
@@ -695,7 +697,8 @@ Relation:
 
 
 Table: RU_RCM
-Description: Table the contains risks and the corresponding control. Establishes the relationship between risks and controls by tracking risk assessments, approvals, mitigation strategies, and associated control details, including effectiveness, ownership, and evaluation criteria. The risk owner name may be given in full, or first name and initial or in any other combination.
+Description: Table captures the relationship between business processes, associated risks, and mitigating controls within an organization. Each record maps specific process steps to identified risks and documents the corresponding control activities, control owners, testing frequencies, and effectiveness assessments. This table serves as the operational foundation for managing internal controls by providing a systematic framework to ensure all process risks are adequately controlled and monitored.
+Table the contains risks and the corresponding control. Establishes the relationship between risks and controls by tracking risk assessments, approvals, mitigation strategies, and associated control details, including effectiveness, ownership, and evaluation criteria. The risk owner name may be given in full, or first name and initial or in any other combination.
 Columns:
     risk_id:  (Risk ID) Unique identifier for each risk. Links to the main risk universe.
     risk_object_id:  (Risk Object ID) System-generated unique identifier for risk objects, ensuring traceability.
@@ -791,7 +794,7 @@ Relation:
 
 
 Table: SCORE
-Description: Records and tracks risk or performance scores over time, including their value, rating, threshold, trend, and associated comments or attachments.
+Description: The SCORE table captures sores and performance tracking for key risk indicators with fields including score_id, assessment dates, risk ratings (Low, Medium), threshold comparisons (Within, Above, Below), trend indicators (On Track, Off Track), due dates, and audit trail information. This table serves as the measurement framework for monitoring kris against predefined thresholds, enabling proactive risk management through systematic tracking of key risk indicator performance and trend analysis. Records and tracks risk or performance scores over time, including their value, rating, threshold, trend, and associated comments or attachments.
 Columns:
     score_id:  (Score ID) Unique identifier for each risk score entry.
     date:  (Date) Date when the score was recorded.
