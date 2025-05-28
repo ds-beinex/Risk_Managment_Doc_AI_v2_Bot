@@ -254,7 +254,7 @@ Columns:
     risk_id:  (Risk ID) Unique risk identifier assigned to each risk entry.
 Relation:
     IMPACTS_MAIN: impact_id
-    RISK_UNIVERSE_MAIN: risk_id
+    SE_MAIN: risk_id
     RU_RCM: risk_id
 
 
@@ -265,7 +265,7 @@ Columns:
     risk_id:  (Risk ID) Unique risk identifier assigned to each risk entry.
 Relation:
     ISSUES_MAIN: issue_id
-    RISK_UNIVERSE_MAIN: risk_id
+    SE_MAIN: risk_id
     RU_RCM: risk_id
 
 Table: ISSUES_MAIN
@@ -341,7 +341,7 @@ Columns:
     risk_id:  (Risk ID) Unique risk identifier assigned to each risk entry.
     mitigation_id:  (Mitigation ID) Unique identifier assigned to each mitigation action.
 Relation:
-    RISK_UNIVERSE_MAIN: risk_id
+    SE_MAIN: risk_id
     RU_RCM: risk_id
     MITIGATION_PLANS_MAIN: mitigation_id
 
@@ -352,7 +352,7 @@ Columns:
     risk_id:  (Risk ID) Unique risk identifier assigned to each risk entry.
     cause_id:  (Cause ID) Unique identifier assigned to each cause.
 Relation:
-    RISK_UNIVERSE_MAIN: risk_id
+    SE_MAIN: risk_id
     RU_RCM: risk_id
     CAUSES_MAIN: cause_id
 
@@ -525,7 +525,7 @@ Columns:
     start_date:  (Start Date) The date when the risk was first recorded or became active.
     end_date:  (End Date) The date when the risk was resolved, mitigated, or deactivated.
     risk_extra_textarea:  (Long Text) Additional text area for extended risk-related notes or descriptions.
-    fraud_related:  (Fraud Related) Indicator specifying whether the risk is associated with fraud.
+    fraud_related:  (Fraud Related) Indicator specifying whether the risk is associated with fraud (flag indicating is a risk is fraud related where 'yes' means fraud and 'no' indicate non-fraud risks).
     risk_new_textarea:  (Long Text) New text area for capturing extended risk details.
     risk_auxiliary_textarea:  (Long Text) Auxiliary text area for supplementary risk-related content.
     is_the_risk_time_bound?:  (Is the Risk Time Bound?) Specifies whether the risk is time-sensitive or has a defined timeframe.
