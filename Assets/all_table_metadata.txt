@@ -1,5 +1,5 @@
 Table: ACTION_MAIN
-Description: Stores details of actions, including their status, priority, ownership, and key dates for tracking and management
+Description: Stores details of actions associated with a risk, which generally comes from an auditor; some risk may or may not have associated action tagged to them. Table ontains status, priority, ownership, and key dates for tracking and management fields.
 Columns:
     object_id:  (Object ID) A unique identifier for each action item, likely a system-generated hash value.
     action_id:  (Action ID) A unique reference code assigned to each action for tracking and identification.
@@ -17,7 +17,7 @@ Relation:
     ACTION_TYPE_LOOKUP: action_id, source_object_id
 
 Table: ACTION_TYPE_LOOKUP
-Description: Maps actions to their source, identifying the originating table and object for reference and categorization
+Description: This a look-up table that maps actions to their source. The table helps identifying the action origin/source
 Columns:
     action_id:  (Action ID) Unique reference code assigned to each action for tracking and identification.
     source:  (Source) Indicates the origin or classification, such as audit, regulation, incident, or control assessment.
