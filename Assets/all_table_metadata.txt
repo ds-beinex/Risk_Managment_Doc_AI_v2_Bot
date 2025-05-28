@@ -438,7 +438,7 @@ Relation:
 
 
 Table: RISK_REGISTER
-Description: Maintains a record of identified risks within a plan, tracking their status and ownership for risk management
+Description: A register that contains identified risks associated with a specific plan or process. It includes key attributes such as risk category, status, ownership, and assessment details, enabling consistent tracking, evaluation, and management of risks across the organization.
 Columns:
     register_id:  (Register ID) Unique identifier for the risk register entry.
     plan_name:  (Plan Name) Name of the risk register, describing the category or focus of risks recorded (e.g., IT risks, operational risks).
