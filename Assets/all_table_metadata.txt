@@ -691,7 +691,7 @@ Relation:
 
 
 Table: RU_RCM
-Description: Establishes the relationship between risks and controls by tracking risk assessments, approvals, mitigation strategies, and associated control details, including effectiveness, ownership, and evaluation criteria
+Description: Table the contains risks and the corresponding control. Establishes the relationship between risks and controls by tracking risk assessments, approvals, mitigation strategies, and associated control details, including effectiveness, ownership, and evaluation criteria. The risk owner name may be given in full, or first name and initial or in any other combination.
 Columns:
     risk_id:  (Risk ID) Unique identifier for each risk. Links to the main risk universe.
     risk_object_id:  (Risk Object ID) System-generated unique identifier for risk objects, ensuring traceability.
@@ -699,7 +699,7 @@ Columns:
     risk_created_by:  (Created by) The user who originally documented or created the risk entry.
     risk_plan_v1:  (Risk Plan) The initial version of the risk plan, outlining the risk management approach.
     risk_manager:  (Risk Manager) The individual responsible for overseeing and managing the risk.
-    risk_owner:  (Risk Owner) The person accountable for addressing and mitigating the risk.
+    risk_owner:  (Risk Owner) The name or initial of the person accountable for addressing and mitigating the risk.
     risk_description:  (Risk Description) A detailed explanation of the risk, its impact, and its relevance to the organization.
     risk_scoring_model:  (Scoring Model) The methodology used for assessing and scoring the risk.
     risk_approval_status:  (Approval Status) The current status of risk approval (e.g., Pending, Approved, Rejected).
