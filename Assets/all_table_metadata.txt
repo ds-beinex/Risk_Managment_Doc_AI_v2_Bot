@@ -30,9 +30,10 @@ Relation:
    	
 
 Table: AUDIT_OBSERVATIONS
-Description: Captures audit findings, including observations, recommendations, actions, and their statuses, along with ownership and due dates for monitoring compliance and risk management
+Description: Audit observations highlight areas for improvement or potential concerns identified during an audit process. They differ from audit findings, which typically indicate specific violations of criteria or requirements. Observations are less severe than findings and often represent areas where an organization can enhance its processes or mitigate potential risks. Unlike findings, observations don't necessarily indicate non-compliance or breaches of regulations. Audit observations can serve as the basis for recommendations made by auditors to improve the organization's performance and risk management. 
+Captures audit findings, including observations, recommendations, actions, and their statuses, along with ownership and due dates for monitoring compliance and risk management
 Columns:
-    audit_id:  (Audit ID) A unique identifier for each audit.
+    audit_id:  (Audit ID) A unique identifier for each audit. use this column for queries like count and count distinct.
     status_of_audit:  (Status of Audit) The current status of the audit (e.g., Completed, Ongoing, Pending).
     observation_id:  (Observation ID) A unique identifier for each audit observation.
     observation:  (Observation) A description of the finding or issue noted during the audit.
@@ -71,7 +72,7 @@ Relation:
 
 
 Table: CAUSES_MAIN
-Description: Maintains details of identified causes for a corresponding risks, including their description, priority, status, and tracking information for creation and updates
+Description: Maintains details of identified causes for a corresponding risks, including their description, priority, status, and tracking information for creation and updates. Causes and risks can have many-to-many relationship.
 Columns:
     cause_id:  (Cause ID) A unique identifier assigned to each cause.
     title:  (Title) A short descriptive title summarizing the cause.
@@ -97,7 +98,7 @@ Relation:
     RU_RCM: control_id
 
 Table: COMPLIANCE_PROGRAMS
-Description: Tracks compliance initiatives, including their status, risk impact, observations, recommendations, and overall compliance scores throughout different stages
+Description: compliance programs refer to an organization's internal policies and procedures designed to ensure adherence to laws, regulations, and internal guidelines. A robust compliance program goes beyond fulfilling legal obligations, aiming to establish an ethical culture, minimize risks, and protect the organization's reputation. The table tracks compliance initiatives taken by the organization, including their status, risk impact, observations, recommendations, and overall compliance scores throughout different stages
 Columns:
     compliance_title:  (Compliance Title) The title or name of the compliance program.
     compliance_id:  (Compliance ID) A unique identifier assigned to each compliance program.
@@ -123,7 +124,8 @@ Relation:
 
 
 Table: CONTROL_MAIN
-Description: Stores detailed information on internal controls, including their type, effectiveness, ownership, implementation status, risk mitigation impact, audit evaluation, and compliance with industry best practices.
+Description: Stores detailed information on internal controls associated with respective risks, 
+documents and assesses the effectiveness of internal controls.It helps auditors evaluate the strength of the control system and identify areas for improvement including their type, effectiveness, ownership, implementation status, risk mitigation impact, audit evaluation, and compliance with industry best practices.
 Columns:
     control_name:  (Control Name) The name of the control being assessed.
     control_type:  (Control Type) The category or classification of the control (e.g., preventive, detective).
@@ -233,7 +235,8 @@ Relation:
 
 
 Table: IMPACTS_MAIN
-Description: Captures details of identified impacts related to causes, including their description, priority, status, and tracking information for creation and updates.
+Description: It captures the consequences or effects of identified causes/risks. This table helps the reader understand the significance of the audit findings and the need for corrective action. Captures details of identified impacts related to causes (causes lead to risk). 
+including their description, priority, status, and tracking information for creation and updates.
 Columns:
     impact_id:  (Impact ID) A unique identifier assigned to each impact record.
     title:  (Title) The name or heading associated with the impact.
@@ -248,7 +251,7 @@ Relation:
     IMR_LOOKUP: impact_id
 
 Table: IMR_LOOKUP
-Description: Maps impacts to associated risks, establishing a relationship between identified risks and their potential consequences
+Description: This table helps in mapping impacts to associated risks. It helps in establishing a relationship between identified risks and their potential impacts.
 Columns:
     impact_id:  (Impact ID) Unique identifier assigned to each impact record.
     risk_id:  (Risk ID) Unique risk identifier assigned to each risk entry.
@@ -259,7 +262,7 @@ Relation:
 
 
 Table: IR_LOOKUP
-Description: Links issues to related risks, helping track risk-associated issues for effective risk management
+Description: This table helps in mapping audit issues to related risks. It helps in tracking risk associated to their respective issues. 
 Columns:
     issue_id:  (Issue ID) Unique identifier assigned to each issue.
     risk_id:  (Risk ID) Unique risk identifier assigned to each risk entry.
