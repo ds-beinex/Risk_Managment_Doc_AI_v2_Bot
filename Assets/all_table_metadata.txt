@@ -272,7 +272,7 @@ Relation:
     RU_RCM: risk_id
 
 Table: ISSUES_MAIN
-Description: Tracks issues, including their status, rating, and last update details for effective issue management.
+Description: This table tracks and manages findings that could negatively impact organizational objectives. It typically links to risks, controls, and assessments, and serves as a central place to manage risk-related problems or deviations.It contains issues identified in an audit, including their status, rating, and last update details for effective issue management.
 Columns:
     issue_id:  (Issue ID) A unique identifier assigned to each issue.
     issue_title:  (Issue Title) A brief title or summary describing the issue.
@@ -285,7 +285,8 @@ Relation:
 
 
 Table: KRI_MAIN
-Description: Maintains Key Risk Indicators (KRIs), tracking their ratings, trends, thresholds, and monitoring details to assess risk levels over time
+Description: This table contains Key Risk Indicators (KRIs). These are a subset of risks that are more critical to the business and are closely monitored.
+Tracking their ratings, trends, thresholds helps in assessing risk levels over time
 Columns:
     object_id:  (Object ID) A unique identifier for each Key Risk Indicator (KRI) record.
     kri_id:  (KRI ID) A unique reference code assigned to the Key Risk Indicator.
