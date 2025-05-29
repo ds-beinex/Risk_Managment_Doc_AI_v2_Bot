@@ -251,7 +251,7 @@ Relation:
     IMR_LOOKUP: impact_id
 
 Table: IMR_LOOKUP
-Description: This table helps in mapping impacts to associated risks. It helps in establishing a relationship between identified risks and their potential impacts.
+Description: This table helps in mapping impacts to associated risks. It helps in establishing a relationship between identified risks and identified impacts.
 Columns:
     impact_id:  (Impact ID) Unique identifier assigned to each impact record.
     risk_id:  (Risk ID) Unique risk identifier assigned to each risk entry.
@@ -262,7 +262,7 @@ Relation:
 
 
 Table: IR_LOOKUP
-Description: This table helps in mapping audit issues to related risks. It helps in tracking risk associated to their respective issues. 
+Description: This table helps in mapping audit issues to related risks. It helps in tracking risk associated to their identified issues. 
 Columns:
     issue_id:  (Issue ID) Unique identifier assigned to each issue.
     risk_id:  (Risk ID) Unique risk identifier assigned to each risk entry.
@@ -272,7 +272,7 @@ Relation:
     RU_RCM: risk_id
 
 Table: ISSUES_MAIN
-Description: This table tracks and manages findings that could negatively impact organizational objectives. It typically links to risks, controls, and assessments, and serves as a central place to manage risk-related problems or deviations.It contains issues identified in an audit, including their status, rating, and last update details for effective issue management.
+Description: This table tracks and manages findings that could negatively impact organizational objectives. It typically links to risks, controls and serves as a central place to manage risk-related problems or deviations.It contains issues identified in an audit, including their status, rating, and last update details for effective issue management.
 Columns:
     issue_id:  (Issue ID) A unique identifier assigned to each issue.
     issue_title:  (Issue Title) A brief title or summary describing the issue.
@@ -294,7 +294,7 @@ Columns:
     entity:  (Entity) The organization or business unit responsible for monitoring the KRI.
     rating:  (Rating) The severity level of the KRI, such as Low, Medium, or High.
     trend:  (Trend) Indicates how the KRI is evolving over time (e.g., "Off Track", "No Change").
-    threshold:  (Threshold) Indicates whether the KRI is within, above, or below the defined threshold.
+    threshold:  (Threshold) Indicates whether the KRI is within, above, or below the defined threshold. If a KRI is above threshold it indicates the risk should be addressed on priority.
     latest_scores:  (Latest Scores) JSON-structured data containing recent KRI scores, dates, colors, ratings, and scoring details.
     occurrence:  (Occurrence) Specifies how often the KRI is reviewed (e.g., Monthly, Quarterly).
     starting_from:  (Starting From) The date when the KRI monitoring started.
@@ -314,7 +314,8 @@ Relation:
     ACTION_TYPE_LOOKUP: source_object_id
 
 Table: KRI_SCORE_LOOKUP
-Description: The table stores Key Risk Indicator (KRI) Ids and their associated scores ids. The score ids are related to the SCORE table where actual KRIs scores are stored for tracking risk performance over time
+Description: The table stores Key Risk Indicator (KRI) Ids and their associated scores ids. 
+The score ids are related to the SCORE table where actual KRIs scores are stored for tracking risk performance.
 Columns:
     score_id:  (Score ID) Unique identifier for each risk score entry.
     kri_id:  (KRI ID) Unique reference code assigned to the Key Risk Indicator.
@@ -324,7 +325,9 @@ Relation:
 
 
 Table: MITIGATION_PLANS_MAIN
-Description: Stores details of mitigation plans developed to address identified risks or control weaknesses. This table includes information such as mitigation strategy, responsible owner, timelines, status, and related risk references, enabling effective tracking and management of risk response activities.
+Description: Mitigation plan is a steps laid out to address risks and weak controls in the organization. This table stores details of mitigation plans developed to address identified risks or weak control. 
+It includes information such as mitigation strategy, responsible owner, timelines, status, and related risk references, enabling effective tracking and management
+of risk response activities.
 Columns:
     mitigation_id:  (Mitigation ID) A unique identifier assigned to each mitigation action.
     title:  (Title) The name of the mitigation action or policy being implemented.
@@ -362,7 +365,7 @@ Relation:
 
 
 Table: RISK_PLAN
-Description: Table contains risk management plans outlining a structured approach for reviewing or assessing risks within a defined timeframe, serving as a foundation for aligning risks, controls, and mitigation strategies under a unified plan.including their unique identifiers, names, active periods, status, and plan creators. Stores risk management plans, including their name, status, period, and creator details for structured risk mitigation
+Description: Table contains name of the risk management plans which outlines a structured approach for reviewing or assessing risks within a defined timeframe.
 Columns:
     plan_id:  (Plan ID) Unique identifier for a specific risk management plan.
     plan_name:  (Plan Name) Name of the risk plan, indicating its purpose or focus.
@@ -373,7 +376,9 @@ Relation:
     RP_RP_LOOKUP: plan_id
 
 Table: RISK_PROGRAM
-Description: The table represents a collection of risk programs with key details including the program ID, plan name, current status, requesting party, timeline dates, objectives, and scope of the risk assessment. This table serves as the master record for managing and monitoring the lifecycle of various risk programs from initiation through completion.
+Description: The table represents a collection of risk programs with key details including the program ID, plan name, current status, requesting party, 
+timeline dates, objectives, and scope of the risk assessment. This table serves as the master record for managing and monitoring the lifecycle of various 
+risk programs from initiation through completion.
 Columns:
     risk_program_id:  (Program ID) Unique identifier for a specific risk program.
     plan_name:  (Plan) Name of the risk plan under which the program falls.
