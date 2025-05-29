@@ -449,7 +449,7 @@ Columns:
     plan_name:  (Plan Name) Name of the risk register, describing the category or focus of risks recorded (e.g., IT risks, operational risks).
     status:  (Status) Current status of the risk register (e.g., Active, Inactive, Under Review).
     risks:  (Risks) the number of risks documented inside the register.
-    created_by:  (Created by) Name of the individual responsible for creating the risk register.
+    created_by:  (Created by) Name of the individual that created the risk register; This is not the risk_owner of the risks inside the register.
 Relation: 
     RR_LOOKUP: register_id
 
