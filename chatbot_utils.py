@@ -194,7 +194,7 @@ def retrieve_top_tables(vector_store, question, k):
 ####################################################################################
 def create_llm_table_retriever(llm, user_query, top_tables, example_df):
     """
-    Create an LLMChain for the second-level retriever prompt.
+    Create an LLMChain for the second-level retriever .
     
     Args:
         llm: A LangChain-compatible LLM object.
@@ -231,7 +231,7 @@ def create_llm_table_retriever(llm, user_query, top_tables, example_df):
     of these 3 most relevant tables only, no additional information is required. Also note that each table name should be in in double quotes.
     """
 
-    retriever_prompt_template = PromptTemplate(
+    retriever__template = PromptTemplate(
         input_variables=["user_query", "top_tables", "examples"],
         template=template_str.strip())
 
@@ -263,6 +263,7 @@ def question_reframer(selected_docs,user_question,llm):
     - Uses the exact table names and column names as provided in the metadata.
     - Specifies the correct column-to-table relationships without hallucinating.
     - Clearly outlines any necessary joins, filtering, grouping, or ordering, using the correct table aliases.
+    - Treat risk_universe_main table the primary table to queries related to risks.
     
     Below is the detailed metadata for the selected tables:
     {selected_metadata}
