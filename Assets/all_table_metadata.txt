@@ -750,7 +750,9 @@ Columns:
     risk_identifier:  (Risk Identifier) A unique identifier or tag assigned to track the risk across reports.
     status:  (Status) The current operational status of the risk (e.g., Open, Closed, In Progress).
     risk_fraud_related:  (Fraud Related) Indicates if the risk is linked to fraud-related concerns.
-    risk_mitigation_timeline:  (Mitigation Timeline) The expected timeline for implementing risk mitigation measures.
+    risk_mitigation_timeline:  (Mitigation Timeline) The expected timeline for implementing risk mitigation measures. The status flag indicating mitigation timelines of differenet risks. its values are 
+                               "Ongoing" which indicates that risk mitigation efforts are currently in progress and have no defined end date yet; "Open Timeline" indicates the risk mitigation efforts have
+                                not been intiatated yet;
     key_risk:  (Key Risk) Identifies whether the risk is classified as a key risk for the organization.
     top_risk:  (Top Risk) Indicates if the risk is among the organization's top priority risks.
     risk_appetite:  (Risk Appetite) The organization's tolerance level for this specific risk.
