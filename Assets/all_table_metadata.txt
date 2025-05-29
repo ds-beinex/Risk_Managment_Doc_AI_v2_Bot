@@ -370,7 +370,7 @@ Columns:
     period:  (Period) Duration covered by the risk plan, defined by a start and end date.
     created_by:  (Created by) Name of the person who created or initiated the risk plan.
 Relation:
-    RP_RP_LOOKUP: plan id
+    RP_RP_LOOKUP: plan_id
 
 Table: RISK_PROGRAM
 Description: The table represents a collection of risk programs with key details including the program ID, plan name, current status, requesting party, timeline dates, objectives, and scope of the risk assessment. This table serves as the master record for managing and monitoring the lifecycle of various risk programs from initiation through completion.
