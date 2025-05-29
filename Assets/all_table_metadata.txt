@@ -376,8 +376,10 @@ Relation:
     RP_RP_LOOKUP: plan_id
 
 Table: RISK_PROGRAM
-Description: The table represents a collection of risk programs with key details including the program ID, plan name, current status, requesting party, 
-timeline dates, objectives, and scope of the risk assessment. This table serves as the master record for managing and monitoring the lifecycle of various 
+Description: A risk program in audit refers to a systematic approach where auditors focus on areas with the highest potential for errors, 
+fraud, or other risks. It's a framework that helps auditors prioritize their work, allocate resources effectively, and ensure they are 
+addressing the most significant issues. The table represents a collection of risk programs. This table serves as the master record for managing
+and monitoring the lifecycle of various 
 risk programs from initiation through completion.
 Columns:
     risk_program_id:  (Program ID) Unique identifier for a specific risk program.
@@ -412,7 +414,10 @@ Relation:
     RP_WP_LOOKUP: risk_program_id
 
 Table: RISK_PROGRAM_OBSERVATIONS
-Description: The table stores detailed audit findings and observations that are identified during the execution of specific risk programs. Each record captures individual observations linked to a parent risk program, documenting issues, deficiencies, or areas of concern discovered during the risk assessment process. This table serves as a repository for all documented observations that support the overall risk evaluation and provide evidence for audit conclusions and recommendations. Tracks risk program observations, including their status, ratings, overdue actions, recommendations, and management responses for effective risk assessment and mitigation.
+Description: The table stores detailed audit findings and observations that are identified during the execution of specific risk programs.
+Each record captures individual observations linked to a parent risk program, documenting issues, deficiencies, or areas 
+of concern discovered during the risk assessment process. This table serves as a repository for all documented observations 
+that support the overall risk evaluation and provide evidence for audit conclusions and recommendations. Tracks risk program observations, including their status, ratings, overdue actions, recommendations, and management responses for effective risk assessment and mitigation.
 Columns:
     observation_id:  (Observation ID) Unique identifier for the recorded risk observation.
     observation:  (Observation) Brief description or label for the identified risk observation.
@@ -447,8 +452,10 @@ Relation:
 
 
 Table: RISK_REGISTER
-Description: The table contains collection or repository of registers where each register contains a set of risks related to a department or process. Some risks are tagged inside a risk regester while others are not. It contains essential fields for risk identification, descriptive names, current status tracking, risk quantification, and ownership assignments. This table functions as the master risk inventory that enables systematic organization and management of an entity's complete risk portfolio across various categories including strategic, operational, financial, compliance, technology, and reputational risks.
-A table the contains register(s) where each register contains risks associated with a specific plan or process. It includes key attributes such as risk category, status, ownership, and assessment details, enabling consistent tracking, evaluation, and management of risks across the organization.
+Description: The table contains collection or repository of registers where each register contains a set of risks related to a department or process.
+A risk is a potential threat that can impact the overall wellbeing of an organization or a department. Some risks are tagged inside a risk register while others are not. 
+This table functions as the master risk inventory that enables systematic organization and management of an entity's complete risk portfolio across various categories including strategic, operational, 
+financial, compliance, technology, and reputational risks.
 Columns:
     register_id:  (Register ID) Unique identifier for the risk register entry.
     plan_name:  (Plan Name) Name of the risk register, describing the category or focus of risks recorded (e.g., IT risks, operational risks).
@@ -460,7 +467,9 @@ Relation:
 
 
 Table: RISK_SCHEDULE
-Description: Tracks the timeline and status of risk program activities, including planned and actual start and end dates for each stage
+Description: A risk program in audit refers to a systematic approach where auditors focus on areas with the highest potential for errors, 
+fraud, or other risks. It's a framework that helps auditors prioritize their work, allocate resources effectively, and ensure they are 
+addressing the most significant issues. The table tracks the timeline and status of risk program activities. This includes planned, actual start and end dates for each stage
 Columns:
     activity_id:  (Sub Activity ID) Unique identifier for a scheduled risk management activity.
     risk_program_stage:  (Sub Activity) Represents the current phase of the risk management schedule, including activities such as Kick-Off Meeting, Initial Data Analytics, Requirement Communication, and Audit Preparation
@@ -702,8 +711,8 @@ Relation:
 
 
 Table: RU_RCM
-Description: Table captures the relationship between business processes, associated risks, and mitigating controls within an organization. Each record maps specific process steps to identified risks and documents the corresponding control activities, control owners, testing frequencies, and effectiveness assessments. This table serves as the operational foundation for managing internal controls by providing a systematic framework to ensure all process risks are adequately controlled and monitored.
-Table the contains risks and the corresponding control. Establishes the relationship between risks and controls by tracking risk assessments, approvals, mitigation strategies, and associated control details, including effectiveness, ownership, and evaluation criteria. The risk owner name may be given in full, or first name and initial or in any other combination.
+Description: RCM or risk control matrix is a tool used by auditors to evaluate and assess the effectiveness of an organization's internal controls. It helps auditors identify, assess, and manage risks by mapping them to specific control activities, ensuring that controls are designed and operating effectively. Table captures the relationship between business risks, and their controls within an organization.
+ This table serves as the operational foundation for managing internal controls by providing a systematic framework to ensure all process risks are adequately controlled and monitored.
 Columns:
     risk_id:  (Risk ID) Unique identifier for each risk. Links to the main risk universe.
     risk_object_id:  (Risk Object ID) System-generated unique identifier for risk objects, ensuring traceability.
@@ -799,7 +808,7 @@ Relation:
 
 
 Table: SCORE
-Description: The SCORE table captures sores and performance tracking for key risk indicators with fields including score_id, assessment dates, risk ratings (Low, Medium), threshold comparisons (Within, Above, Below), trend indicators (On Track, Off Track), due dates, and audit trail information. This table serves as the measurement framework for monitoring kris against predefined thresholds, enabling proactive risk management through systematic tracking of key risk indicator performance and trend analysis. Records and tracks risk or performance scores over time, including their value, rating, threshold, trend, and associated comments or attachments.
+Description: The table stores scores for performance tracking of key risk indicators. This table serves as the measurement framework for monitoring kris against predefined thresholds, enabling proactive risk management through systematic tracking of key risk indicator performance and trend analysis. 
 Columns:
     score_id:  (Score ID) Unique identifier for each risk score entry.
     date:  (Date) Date when the score was recorded.
