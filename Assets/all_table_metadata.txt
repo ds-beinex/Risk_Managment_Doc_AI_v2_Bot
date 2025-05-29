@@ -554,7 +554,9 @@ Columns:
     risk_subsidiary_textarea:  (Long Text) Details related to how the risk affects subsidiary entities within the organization.
     risk_mitigation_strategy_effectiveness:  (Risk Mitigation Strategy Effectiveness) Assessment of how effective the risk mitigation strategy has been.
     additional_mega_process:  (Mega Process) Additional high-level business processes affected by the risk.
-    risk_mitigation_timeline:  (Mitigation Timeline) Expected timeline for implementing risk mitigation measures.
+    risk_mitigation_timeline:  (Mitigation Timeline) Expected timeline for implementing risk mitigation measures. The status flag indicating mitigation timelines of differenet risks. its values are 
+                               "Ongoing" which indicates that risk mitigation efforts are currently in progress and have no defined end date yet; "Open Timeline" indicates the risk mitigation efforts have
+                                not been intiatated yet;
     additional_major_process:  (Major Process) Additional sub-processes related to the risk.
     additional_designation:  (Designation 1) Additional roles or positions responsible for managing the risk.
     key_risk:  (Key Risk) Indicator flagging whether this risk is considered a key or high-priority risk.
