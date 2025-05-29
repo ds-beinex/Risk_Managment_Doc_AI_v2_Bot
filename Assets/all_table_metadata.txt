@@ -442,7 +442,7 @@ Relation:
 
 
 Table: RISK_REGISTER
-Description: The table contains collection or repository of registers where each register contains a set of risks related to a department or process. It contains essential fields for risk identification, descriptive names, current status tracking, risk quantification, and ownership assignments. This table functions as the master risk inventory that enables systematic organization and management of an entity's complete risk portfolio across various categories including strategic, operational, financial, compliance, technology, and reputational risks.
+Description: The table contains collection or repository of registers where each register contains a set of risks related to a department or process. Some risks are tagged in a risk regester while others are not. It contains essential fields for risk identification, descriptive names, current status tracking, risk quantification, and ownership assignments. This table functions as the master risk inventory that enables systematic organization and management of an entity's complete risk portfolio across various categories including strategic, operational, financial, compliance, technology, and reputational risks.
 A table the contains register(s) where each register contains risks associated with a specific plan or process. It includes key attributes such as risk category, status, ownership, and assessment details, enabling consistent tracking, evaluation, and management of risks across the organization.
 Columns:
     register_id:  (Register ID) Unique identifier for the risk register entry.
