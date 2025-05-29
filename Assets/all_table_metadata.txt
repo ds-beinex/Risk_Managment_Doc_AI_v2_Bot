@@ -482,7 +482,7 @@ Relation:
 
 
 Table: RISK_UNIVERSE_MAIN
-Description: The table serves as the comprehensive master reference that defines the complete scope of all potential risks that could affect an organization across all business areas and functions. This table establishes the foundational risk taxonomy and categorization framework that guides risk identification processes throughout the organization. It functions as the authoritative source for ensuring comprehensive risk coverage and standardized risk classification across all risk management activities and assessments.
+Description: The table serves as the comprehensive master reference that defines the complete scope of all potential risks that could affect an organization across all business areas and functions. This table establishes the foundational risk taxonomy and categorization framework that guides risk identification processes throughout the organization. It functions as the authoritative source for ensuring comprehensive risk coverage and standardized risk classification across all risk management activities and assessments. Has information on fraud related risks.
 Serves as a comprehensive repository of risks, tracking their details, ratings, controls, causes, impacts, mitigation strategies, ownership, and alignment with business processes and strategies.
 Columns:
     object_id:  (Object ID) Unique system-generated identifier for the risk record.
