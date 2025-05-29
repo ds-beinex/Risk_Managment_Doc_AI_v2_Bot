@@ -231,7 +231,7 @@ def create_llm_table_retriever(llm, user_query, top_tables, example_df):
     of these 3 most relevant tables only, no additional information is required. Also note that each table name should be in in double quotes.
     """
 
-    retriever__template = PromptTemplate(
+    retriever_prompt_template = PromptTemplate(
         input_variables=["user_query", "top_tables", "examples"],
         template=template_str.strip())
 
