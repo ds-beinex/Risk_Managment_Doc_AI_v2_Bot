@@ -14,13 +14,18 @@ import csv
 # Policy module imports
 from langchain.chat_models import ChatOpenAI
 from langchain.document_loaders import PyPDFLoader
-from langchain.memory import ConversationBufferMemory
+from langchain.memory import ConversationBufferMemory,ConversationBufferWindowMemory
 from langchain.memory.chat_message_histories import StreamlitChatMessageHistory
 from langchain_openai import OpenAIEmbeddings
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain.chains import ConversationalRetrievalChain
 from langchain.vectorstores import DocArrayInMemorySearch
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import FAISS
+from langchain.schema.document import Document
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
+from langchain_core.messages import HumanMessage, AIMessage
 from langchain_ollama import ChatOllama
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
@@ -57,7 +62,7 @@ NVIDIA_API_KEY   = st.secrets["nvidia"]["api_key"]
 
 # -- Configurations --
 logo = Image.open(r"Assets/aurex_logo.png")
-descriptions_file = r"Assets/all_table_metadata.txt"
+descriptions_file = r"Assets/all_table_metadata_v2.txt"
 examples_file = r"Assets/Example question datasets.xlsx"
 
 db_config = {
@@ -117,6 +122,7 @@ class PrintRetrievalHandler(BaseCallbackHandler):
                 self.status.write(f"**Document {idx} from {source}**")
                 self.status.markdown(doc.page_content)
             self.status.update(state="complete")
+
 
 
 
@@ -226,6 +232,79 @@ def process_risk_query(llm, user_question):
     return conv, result, sql
 
 
+
+def is_followup_question(llm, memory, current_question):
+    """
+    Use an LLM to determine if the current question is a follow-up to the last Q&A in memory.
+
+    Returns:
+        bool: True if it's a follow-up, False otherwise.
+    """
+    # Extract the most recent Q&A from memory
+    messages = memory.chat_memory.messages
+    if len(messages) >= 2:
+        # Get the last Q&A pair
+        prev_question = messages[-2].content if isinstance(messages[-2], HumanMessage) else ""
+        prev_answer = messages[-1].content if isinstance(messages[-1], AIMessage) else ""
+    
+        # Prepare prompt template
+        followup_prompt = PromptTemplate.from_template(
+            """You are a helpful assistant.
+    
+            Given:
+            - Previous user question: "{prev_question}"
+            - Previous assistant answer: "{prev_answer}"
+            - Current user question: "{current_question}"
+            
+            Determine if the current question depends on or continues the previous conversation. 
+            
+            Respond with only "Yes" or "No" — do not explain.
+                """)
+    
+        chain = LLMChain(llm=llm, prompt=followup_prompt)
+        result = chain.run({
+            "prev_question": prev_question,
+            "prev_answer": prev_answer,
+            "current_question": current_question
+        }).strip().lower()
+    else:
+        result="No"    
+
+    return result.startswith("y")
+
+
+
+def rephrase_question_with_memory(llm, memory, current_question):
+    """
+    Rephrases a follow-up question into a standalone question using the latest memory buffer.
+
+    Args:
+        llm: LangChain-compatible LLM (e.g., ChatOpenAI, ChatNVIDIA, ChatOllama)
+        memory: LangChain memory object (e.g., ConversationBufferWindowMemory)
+        current_question: str - the user’s current follow-up question
+
+    Returns:
+        str: The rephrased, standalone version of the question
+    """
+    rephrase_prompt = PromptTemplate(input_variables=["chat_history", "question"],
+        template="""
+        Given the following conversation history and a follow-up question, rephrase the question to be a standalone query.
+        
+        Chat History:
+        {chat_history}
+        
+        Follow-up question:
+        {question}
+        
+        Standalone question:""".strip() )
+
+    chain = LLMChain(llm=llm,prompt=rephrase_prompt,memory=memory, verbose=False )
+    standalone_qstn = chain.run(question=current_question).strip()                 
+
+    return standalone_qstn
+
+
+
 # -- Policy Module --
 if policy_flag:
     st.success("Connected to Policy Module")
@@ -280,22 +359,35 @@ else:
         st.session_state.chat_history = []
     if 'risk_msgs' not in st.session_state:
         st.session_state.risk_msgs = []
+    # Chat history for rephrasing via ConversationalRetrievalChain
+    if 'risk_chat_history' not in st.session_state:
+        st.session_state.risk_chat_history = StreamlitChatMessageHistory()
     llm_audit = ChatNVIDIA(
-        model="meta/llama-4-scout-17b-16e-instruct",
+        model="meta/llama-3.3-70b-instruct",
         api_key= NVIDIA_API_KEY,
-        temperature=0, num_ctx=50000
-    )
+        temperature=0, num_ctx=50000)
+
+    
+    memory = ConversationBufferWindowMemory( memory_key="chat_history", chat_memory=st.session_state.risk_chat_history, return_messages=True,k=5)
     # Display chat history
     for msg in st.session_state.risk_msgs:
         st.chat_message(msg['role']).write(msg['content'])
-    # User input at bottom
+
+    
+# User input at bottom
     if prompt := st.chat_input(placeholder="Ask a question about the Risk Management module"):
         # User message
         st.chat_message("user").write(prompt)
         st.session_state.risk_msgs.append({"role":"user","content":prompt})
         # Process the question
         #with st.spinner("Generating the answer..."):
-        conv, result, sql = process_risk_query(llm_audit, prompt)
+        # First message: use as-is. Subsequent: rephrase using memory.
+       
+        with st.spinner("Rephrasing your question with chat history..."):
+            question_to_process = rephrase_question_with_memory(llm_audit, memory, prompt)
+            placeholders["Reframed Question"].markdown("## Rephrased Question with Memory")
+            placeholders["Reframed Question"].write(question_to_process)
+        conv, result, sql = process_risk_query(llm_audit, question_to_process)
         if conv is None:
             st.chat_message("assistant").write( "Sorry, I couldn't answer your question.")
             st.session_state.risk_msgs.append({"role":"assistant","content":"Sorry, I couldn't answer your question."})
